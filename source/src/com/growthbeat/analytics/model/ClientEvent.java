@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.growthbeat.analytics.GrowthAnalytics;
 import com.growthbeat.model.Model;
 import com.growthbeat.utils.DateUtils;
 import com.growthbeat.utils.JSONObjectUtils;
@@ -25,6 +26,22 @@ public class ClientEvent extends Model {
 	private Date created;
 
 	public ClientEvent() {
+		super();
+	}
+
+	public ClientEvent create(String clientId, String eventId, Map<String, String> properties) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("clientId", clientId);
+		params.put("eventId", eventId);
+		for (Map.Entry<String, String> entry : properties.entrySet())
+			params.put(String.format("properties[%s]", entry.getKey()), entry.getValue());
+		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_events", params);
+		if (jsonObject != null)
+			setJsonObject(jsonObject);
+
+		return this;
+
 	}
 
 	public String getId() {
