@@ -1,10 +1,13 @@
 package com.growthbeat.analytics.model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.growthbeat.analytics.GrowthAnalytics;
 import com.growthbeat.model.Model;
 import com.growthbeat.utils.DateUtils;
 import com.growthbeat.utils.JSONObjectUtils;
@@ -22,6 +25,20 @@ public class ClientTag extends Model {
 	private Date created;
 
 	public ClientTag() {
+	}
+
+	public ClientTag create(String clientId, String tagId, String value) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("clientId", clientId);
+		params.put("tagId", tagId);
+		params.put("value", value);
+		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_tags", params);
+		if (jsonObject != null)
+			setJsonObject(jsonObject);
+
+		return this;
+
 	}
 
 	public String getId() {
