@@ -1,10 +1,14 @@
 package com.growthbeat.analytics;
 
+import java.util.Map;
+
 import android.content.Context;
 
 import com.growthbeat.CatchableThread;
 import com.growthbeat.GrowthbeatCore;
 import com.growthbeat.Logger;
+import com.growthbeat.analytics.model.ClientEvent;
+import com.growthbeat.analytics.model.ClientTag;
 import com.growthbeat.analytics.model.GrowthAnalyticsHttpClient;
 
 public class GrowthAnalytics {
@@ -38,6 +42,43 @@ public class GrowthAnalytics {
 		this.context = context;
 		this.applicationId = applicationId;
 		this.credentialId = credentialId;
+
+	}
+
+	public void trackEvent(final String eventId, final Map<String, String> properties) {
+
+		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					ClientEvent clientEvent = new ClientEvent().create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
+							properties);
+					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (clientEventId: %s)", clientEvent.getId()));
+				} catch (GrowthAnalyticsException e) {
+					GrowthAnalytics.this.logger.info(String.format("Tracking event fail. %s", e.getMessage()));
+				}
+			}
+		}).start();
+
+	}
+
+	public void setTag(final String tagId, final String value) {
+
+		this.logger.info(String.format("Set tag... (eventId: %s, value: %s)", tagId, value));
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					ClientTag clientTag = new ClientTag().create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
+					GrowthAnalytics.this.logger.info(String.format("Setting tag success. (clientTagId: %s)", clientTag.getId()));
+				} catch (GrowthAnalyticsException e) {
+					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
+				}
+			}
+		}).start();
 
 	}
 
