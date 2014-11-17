@@ -23,7 +23,6 @@ public class GrowthAnalytics {
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
 	private final Preference preference = new Preference(PREFERENCE_DEFAULT_FILE_NAME);
 
-	private Context context = null;
 	private String applicationId;
 	private String credentialId;
 
@@ -37,14 +36,11 @@ public class GrowthAnalytics {
 
 	public void initialize(final Context context, final String applicationId, final String credentialId) {
 
-		if (this.context != null)
-			return;
-
 		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
 
-		this.context = context;
 		this.applicationId = applicationId;
 		this.credentialId = credentialId;
+		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
 
 	}
 
@@ -82,14 +78,6 @@ public class GrowthAnalytics {
 			}
 		}).start();
 
-	}
-
-	public Context getContext() {
-		return context;
-	}
-
-	public void setContext(Context context) {
-		this.context = context;
 	}
 
 	public String getApplicationId() {
