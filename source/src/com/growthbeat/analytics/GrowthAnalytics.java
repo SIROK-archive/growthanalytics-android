@@ -16,7 +16,7 @@ public class GrowthAnalytics {
 	public static final String BASE_URL = "https://api.analytics.growthpush.com/";
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
-	private final Logger logger = new Logger("Growth Analytics");
+	private final Logger logger = new Logger("GrowthAnalytics");
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient();
 
 	private Context context = null;
