@@ -13,7 +13,7 @@ import com.growthbeat.http.GrowthbeatHttpClient;
 
 public class GrowthAnalytics {
 
-	public static final String BASE_URL = "https://api.growthanalytics.growthpush.com/";
+	public static final String BASE_URL = "https://api.analytics.growthpush.com/";
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger("Growth Analytics");
