@@ -9,7 +9,7 @@ import com.growthbeat.GrowthbeatCore;
 import com.growthbeat.Logger;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
-import com.growthbeat.analytics.model.GrowthAnalyticsHttpClient;
+import com.growthbeat.http.GrowthbeatHttpClient;
 
 public class GrowthAnalytics {
 
@@ -17,7 +17,7 @@ public class GrowthAnalytics {
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger("Growth Analytics");
-	private final GrowthAnalyticsHttpClient httpClient = new GrowthAnalyticsHttpClient();
+	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient();
 
 	private Context context = null;
 	private String applicationId;
@@ -109,7 +109,7 @@ public class GrowthAnalytics {
 		return logger;
 	}
 
-	public GrowthAnalyticsHttpClient getHttpClient() {
+	public GrowthbeatHttpClient getHttpClient() {
 		return httpClient;
 	}
 
