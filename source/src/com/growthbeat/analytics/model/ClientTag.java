@@ -27,17 +27,19 @@ public class ClientTag extends Model {
 	public ClientTag() {
 	}
 
-	public ClientTag create(String clientId, String tagId, String value) {
+	private ClientTag(JSONObject jsonObject) {
+		setJsonObject(jsonObject);
+	}
+
+	public static ClientTag create(String clientId, String tagId, String value) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("clientId", clientId);
 		params.put("tagId", tagId);
 		params.put("value", value);
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_tags", params);
-		if (jsonObject != null)
-			setJsonObject(jsonObject);
 
-		return this;
+		return new ClientTag(jsonObject);
 
 	}
 

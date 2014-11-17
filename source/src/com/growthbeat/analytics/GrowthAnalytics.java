@@ -71,7 +71,7 @@ public class GrowthAnalytics {
 			@Override
 			public void run() {
 				try {
-					ClientTag clientTag = new ClientTag().create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
+					ClientTag clientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
 					GrowthAnalytics.this.logger.info(String.format("Setting tag success. (clientTagId: %s)", clientTag.getId()));
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
