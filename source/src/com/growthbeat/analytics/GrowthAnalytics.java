@@ -7,17 +7,21 @@ import android.content.Context;
 import com.growthbeat.CatchableThread;
 import com.growthbeat.GrowthbeatCore;
 import com.growthbeat.Logger;
+import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
 import com.growthbeat.http.GrowthbeatHttpClient;
 
 public class GrowthAnalytics {
 
-	public static final String BASE_URL = "https://api.analytics.growthpush.com/";
+	public static final String LOGGER_DEFAULT_TAG = "GrowthAnalytics";
+	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthpush.com/";
+	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
-	private final Logger logger = new Logger("GrowthAnalytics");
-	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient();
+	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
+	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
+	private final Preference preference = new Preference(PREFERENCE_DEFAULT_FILE_NAME);
 
 	private Context context = null;
 	private String applicationId;
@@ -25,7 +29,6 @@ public class GrowthAnalytics {
 
 	private GrowthAnalytics() {
 		super();
-		httpClient.setBaseUrl(BASE_URL);
 	}
 
 	public static GrowthAnalytics getInstance() {
@@ -111,6 +114,10 @@ public class GrowthAnalytics {
 
 	public GrowthbeatHttpClient getHttpClient() {
 		return httpClient;
+	}
+
+	public Preference getPreference() {
+		return preference;
 	}
 
 	private static class Thread extends CatchableThread {
