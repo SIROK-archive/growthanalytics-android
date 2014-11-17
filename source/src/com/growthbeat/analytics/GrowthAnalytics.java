@@ -53,8 +53,7 @@ public class GrowthAnalytics {
 			@Override
 			public void run() {
 				try {
-					ClientEvent clientEvent = new ClientEvent().create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
-							properties);
+					ClientEvent clientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, properties);
 					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (clientEventId: %s)", clientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Tracking event fail. %s", e.getMessage()));

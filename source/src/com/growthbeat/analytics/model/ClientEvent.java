@@ -29,7 +29,11 @@ public class ClientEvent extends Model {
 		super();
 	}
 
-	public ClientEvent create(String clientId, String eventId, Map<String, String> properties) {
+	private ClientEvent(JSONObject jsonObject) {
+		setJsonObject(jsonObject);
+	}
+
+	public static ClientEvent create(String clientId, String eventId, Map<String, String> properties) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("clientId", clientId);
@@ -37,10 +41,8 @@ public class ClientEvent extends Model {
 		for (Map.Entry<String, String> entry : properties.entrySet())
 			params.put(String.format("properties[%s]", entry.getKey()), entry.getValue());
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_events", params);
-		if (jsonObject != null)
-			setJsonObject(jsonObject);
 
-		return this;
+		return new ClientEvent(jsonObject);
 
 	}
 
