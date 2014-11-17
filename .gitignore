@@ -29,4 +29,5 @@ proguard/
 # Eclipse project files
 .classpath
 
+.idea
 .DS_Store
