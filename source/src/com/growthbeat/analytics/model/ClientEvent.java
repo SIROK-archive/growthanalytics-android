@@ -49,7 +49,7 @@ public class ClientEvent extends Model {
 	public static void save(ClientEvent clientEvent) {
 		if (clientEvent == null)
 			return;
-		GrowthAnalytics.getInstance().getPreference().save(clientEvent.getEventId(), clientEvent.getJsonObject());
+		GrowthAnalytics.getInstance().getPreference().save(clientEvent.getEventId(), clientEvent.getReducedJsonObject());
 	}
 
 	public static ClientEvent load(String eventId) {
@@ -115,6 +115,21 @@ public class ClientEvent extends Model {
 
 		return jsonObject;
 
+	}
+
+	public JSONObject getReducedJsonObject() {
+
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("id", getId());
+			jsonObject.put("clientId", clientId);
+			jsonObject.put("eventId", eventId);
+			jsonObject.put("created", DateUtils.formatToDateTimeString(getCreated()));
+		} catch (JSONException e) {
+			return null;
+		}
+
+		return jsonObject;
 	}
 
 	@Override
