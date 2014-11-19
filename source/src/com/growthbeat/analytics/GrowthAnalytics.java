@@ -1,5 +1,6 @@
 package com.growthbeat.analytics;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
@@ -45,15 +46,24 @@ public class GrowthAnalytics {
 
 	}
 
+	public void trackEvent(final String eventId) {
+		this.trackEvent(eventId, new HashMap<String, String>(), TrackEventOption.DEFAULT);
+	}
+
+	public void trackEventOnce(final String eventId, final Map<String, String> properties) {
+		this.trackEvent(eventId, properties, TrackEventOption.ONCE);
+	}
+
 	public void trackEvent(final String eventId, final Map<String, String> properties, final int option) {
 
 		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
-		if ((option & TrackEventOption.ONCE) != 0 && ClientEvent.load(eventId) != null) {
+		ClientEvent clientEvent = ClientEvent.load(eventId);
+		if ((option & TrackEventOption.ONCE) != 0 && clientEvent != null) {
 			GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
 			return;
 		}
 
-		if ((option & TrackEventOption.MARK_FIRST_TIME) != 0)
+		if (clientEvent == null && (option & TrackEventOption.MARK_FIRST_TIME) != 0)
 			properties.put("first_time", null);
 
 		new Thread(new Runnable() {
