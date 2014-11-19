@@ -10,6 +10,7 @@ import com.growthbeat.Logger;
 import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
+import com.growthbeat.analytics.options.TrackEventOption;
 import com.growthbeat.http.GrowthbeatHttpClient;
 
 public class GrowthAnalytics {
@@ -44,20 +45,23 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackEvent(final String eventId, final Map<String, String> properties, final boolean once) {
+	public void trackEvent(final String eventId, final Map<String, String> properties, final int option) {
 
 		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
-		if (ClientEvent.load(eventId) != null) {
+		if ((option & TrackEventOption.ONCE) != 0 && ClientEvent.load(eventId) != null) {
 			GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
 			return;
 		}
+
+		if ((option & TrackEventOption.MARK_FIRST_TIME) != 0)
+			properties.put("first_time", null);
 
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					ClientEvent clientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, properties);
-					if (once) {
+					if ((option & TrackEventOption.ONCE) != 0) {
 						ClientEvent.save(clientEvent);
 						GrowthAnalytics.this.logger.info("save event .");
 					}
