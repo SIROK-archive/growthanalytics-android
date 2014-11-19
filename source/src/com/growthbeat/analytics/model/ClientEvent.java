@@ -46,6 +46,16 @@ public class ClientEvent extends Model {
 
 	}
 
+	public static void save(ClientEvent clientEvent) {
+		if (clientEvent == null)
+			return;
+		GrowthAnalytics.getInstance().getPreference().save(clientEvent.getEventId(), clientEvent.getJsonObject());
+	}
+
+	public static ClientTag load(String eventId) {
+		return new ClientTag(GrowthAnalytics.getInstance().getPreference().get(eventId));
+	}
+
 	public String getId() {
 		return id;
 	}

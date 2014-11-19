@@ -44,15 +44,23 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackEvent(final String eventId, final Map<String, String> properties) {
+	public void trackEvent(final String eventId, final Map<String, String> properties, final boolean once) {
 
 		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
+		if (ClientEvent.load(eventId) != null) {
+			GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
+			return;
+		}
 
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					ClientEvent clientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, properties);
+					if (once) {
+						ClientEvent.save(clientEvent);
+						GrowthAnalytics.this.logger.info("save event .");
+					}
 					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (clientEventId: %s)", clientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Tracking event fail. %s", e.getMessage()));
