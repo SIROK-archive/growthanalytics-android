@@ -64,7 +64,13 @@ public class GrowthAnalytics {
 
 	public void setTag(final String tagId, final String value) {
 
-		this.logger.info(String.format("Set tag... (eventId: %s, value: %s)", tagId, value));
+		this.logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
+
+		ClientTag clientTag = ClientTag.load(tagId);
+		if (clientTag != null && (value != null && value.equals(clientTag.getValue()))) {
+			this.logger.info(String.format("Already exists tag... (tagId: %s, value: %s)", tagId, value));
+			return;
+		}
 
 		new Thread(new Runnable() {
 			@Override
@@ -72,6 +78,7 @@ public class GrowthAnalytics {
 				try {
 					ClientTag clientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
 					GrowthAnalytics.this.logger.info(String.format("Setting tag success. (clientTagId: %s)", clientTag.getId()));
+					ClientTag.save(clientTag);
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}

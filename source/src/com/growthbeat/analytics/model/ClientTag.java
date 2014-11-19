@@ -14,6 +14,8 @@ import com.growthbeat.utils.JSONObjectUtils;
 
 public class ClientTag extends Model {
 
+	private static long CACHE_INTERVAL = 7 * 24 * 60 * 60 * 1000;
+
 	private String id;
 
 	private String clientId;
@@ -27,7 +29,8 @@ public class ClientTag extends Model {
 	public ClientTag() {
 	}
 
-	private ClientTag(JSONObject jsonObject) {
+	public ClientTag(JSONObject jsonObject) {
+		super();
 		setJsonObject(jsonObject);
 	}
 
@@ -40,6 +43,46 @@ public class ClientTag extends Model {
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_tags", params);
 
 		return new ClientTag(jsonObject);
+
+	}
+
+	public static void save(ClientTag clientTag) {
+
+		JSONObject loadJson = GrowthAnalytics.getInstance().getPreference().get("tags");
+		if (loadJson == null)
+			loadJson = new JSONObject();
+
+		JSONObject jsonObject = clientTag.getJsonObject();
+		try {
+			loadJson.put(clientTag.getTagId(), jsonObject);
+		} catch (JSONException e) {
+		}
+
+		GrowthAnalytics.getInstance().getPreference().save("tags", loadJson);
+
+	}
+
+	public static ClientTag load(String tagId) {
+
+		JSONObject loadJson = GrowthAnalytics.getInstance().getPreference().get("tags");
+		if (loadJson == null)
+			return new ClientTag();
+
+		JSONObject json = null;
+		try {
+			json = loadJson.getJSONObject(tagId);
+		} catch (JSONException e) {
+			return null;
+		}
+
+		ClientTag clientTag = new ClientTag(json);
+		long now = new Date().getTime() - clientTag.getCreated().getTime();
+		if (now > CACHE_INTERVAL) {
+			loadJson.remove(tagId);
+			return null;
+		}
+
+		return clientTag;
 
 	}
 
