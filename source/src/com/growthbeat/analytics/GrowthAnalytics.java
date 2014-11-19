@@ -93,15 +93,16 @@ public class GrowthAnalytics {
 
 		this.logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
 
-		ClientTag clientTag = ClientTag.load(tagId);
-		if (clientTag != null && (value != null && value.equals(clientTag.getValue()))) {
-			this.logger.info(String.format("Already exists tag... (tagId: %s, value: %s)", tagId, value));
-			return;
-		}
-
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+
+				ClientTag referecedClientTag = ClientTag.load(tagId);
+				if (referecedClientTag != null && (value != null && value.equals(referecedClientTag.getValue()))) {
+					GrowthAnalytics.this.logger.info(String.format("Already exists tag... (tagId: %s, value: %s)", tagId, value));
+					return;
+				}
+
 				try {
 					ClientTag clientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
 					GrowthAnalytics.this.logger.info(String.format("Setting tag success. (clientTagId: %s)", clientTag.getId()));
