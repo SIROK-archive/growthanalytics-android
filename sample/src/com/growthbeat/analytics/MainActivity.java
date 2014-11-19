@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -15,6 +18,14 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		GrowthAnalytics.getInstance().trackEvent("launch", new HashMap<String, String>(), false);
+
+		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String tag = ((Button) v).getText().toString();
+				GrowthAnalytics.getInstance().setTag("clicked", tag);
+			}
+		});
 
 	}
 
