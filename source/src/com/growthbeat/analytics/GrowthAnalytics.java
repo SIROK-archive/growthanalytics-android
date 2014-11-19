@@ -13,6 +13,8 @@ import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
 import com.growthbeat.analytics.options.TrackEventOption;
 import com.growthbeat.http.GrowthbeatHttpClient;
+import com.growthbeat.utils.AppUtils;
+import com.growthbeat.utils.DeviceUtils;
 
 public class GrowthAnalytics {
 
@@ -111,6 +113,29 @@ public class GrowthAnalytics {
 					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
 			}
+		}).start();
+
+	}
+
+	public void setDeviceTags() {
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				if (GrowthbeatCore.getInstance().getContext() == null)
+					throw new IllegalStateException("GrowthPush is not initialized.");
+
+				setTag("Device", DeviceUtils.getModel());
+				setTag("OS", "Android " + DeviceUtils.getOsVersion());
+				setTag("Language", DeviceUtils.getLanguage());
+				setTag("Time Zone", DeviceUtils.getTimeZone());
+				setTag("Version", AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
+				setTag("Build", AppUtils.getAppBuild(GrowthbeatCore.getInstance().getContext()));
+
+			}
+
 		}).start();
 
 	}
