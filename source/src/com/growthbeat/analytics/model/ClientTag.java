@@ -14,8 +14,6 @@ import com.growthbeat.utils.JSONObjectUtils;
 
 public class ClientTag extends Model {
 
-	private static long CACHE_INTERVAL = 7 * 24 * 60 * 60 * 1000;
-
 	private String id;
 
 	private String clientId;
@@ -75,14 +73,7 @@ public class ClientTag extends Model {
 			return null;
 		}
 
-		ClientTag clientTag = new ClientTag(json);
-		long now = new Date().getTime() - clientTag.getCreated().getTime();
-		if (now > CACHE_INTERVAL) {
-			loadJson.remove(tagId);
-			return null;
-		}
-
-		return clientTag;
+		return new ClientTag(json);
 
 	}
 
