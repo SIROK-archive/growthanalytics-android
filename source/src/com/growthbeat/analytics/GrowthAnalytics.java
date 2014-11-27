@@ -22,13 +22,13 @@ public class GrowthAnalytics {
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthpush.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
-	private static final String EVENT = "event";
-	private static final String TAG = "tag";
-	private static final String TAG_GENERAL = "General";
-	private static final String TAG_GAME = "Game";
-	private static final String TAG_SOCIAL = "Social";
-	private static final String TAG_GROWTHPUSH = "GrowthPush";
-	private static final String TAG_GROWTHMAIL = "GrowthMail";
+	private static final String EVENT = "Event";
+	private static final String TAG = "Tag";
+	private static final String GENERAL = "General";
+	private static final String GAME = "Game";
+	private static final String SOCIAL = "Social";
+	private static final String GROWTHPUSH = "GrowthPush";
+	private static final String GROWTHMAIL = "GrowthMail";
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
@@ -126,59 +126,62 @@ public class GrowthAnalytics {
 	}
 
 	public void setUserId(String userId) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "UserId"), userId);
+		setTag(String.format("%s:%s", GENERAL, "UserId"), userId);
 	}
 
 	public void setAdvertisingId(String advertisingId) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "AdvertisingId"), advertisingId);
+		setTag(String.format("%s:%s", GENERAL, "AdvertisingId"), advertisingId);
 	}
 
 	public void setAge(int age) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Age"), String.valueOf(age));
+		setTag(String.format("%s:%s", GENERAL, "Age"), String.valueOf(age));
 	}
 
 	public void setGender(String gender) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Gender"), String.valueOf(gender));
+		setTag(String.format("%s:%s", GENERAL, "Gender"), String.valueOf(gender));
 	}
 
 	public void setLocale(String locale) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Locale"), locale);
+		setTag(String.format("%s:%s", GENERAL, "Locale"), locale);
 	}
 
 	public void setLanguage(String language) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "langugage"), language);
+		setTag(String.format("%s:%s", GENERAL, "langugage"), language);
 	}
 
 	public void setOS(String os) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "OS"), os);
+		setTag(String.format("%s:%s", GENERAL, "OS"), os);
 	}
 
 	public void setTimeZone(String timeZone) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "TimeZone"), timeZone);
+		setTag(String.format("%s:%s", GENERAL, "TimeZone"), timeZone);
 	}
 
 	public void setAppVersion(String appVersion) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "AppVersion"), appVersion);
+		setTag(String.format("%s:%s", GENERAL, "AppVersion"), appVersion);
 	}
 
 	public void setName(String name) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Name"), name);
+		setTag(String.format("%s:%s", GENERAL, "Name"), name);
 	}
 
 	public void setRandom(String random) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Random"), random);
+		setTag(String.format("%s:%s", GENERAL, "Random"), random);
 	}
 
 	public void setLevel(String level) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Level"), level);
+		setTag(String.format("%s:%s", GENERAL, "Level"), level);
 	}
 
 	public void setDevelopment(String development) {
-		setTag(String.format("%s:%s", TAG_GENERAL, "Development"), development);
+		setTag(String.format("%s:%s", GENERAL, "Development"), development);
 	}
 
 	public void open() {
-
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("referrer", null);
+		trackEvent(String.format("%s:%s", GENERAL, "Open"), properties, TrackEventOption.DEFAULT);
+		trackEventOnce(String.format("%s:%s", GENERAL, "Install"), properties);
 	}
 
 	public void close() {
