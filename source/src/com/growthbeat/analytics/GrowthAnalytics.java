@@ -185,11 +185,16 @@ public class GrowthAnalytics {
 	}
 
 	public void close() {
-
+		trackEvent(String.format("%s:%s", GENERAL, "Close"), new HashMap<String, String>(), TrackEventOption.DEFAULT);
+		// TODO caliculate session time.
 	}
 
 	public void purchase(int price, String category, String product) {
-
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("Price", String.valueOf(price));
+		properties.put("Category", category);
+		properties.put("Product", product);
+		trackEvent(String.format("%s:%s", GENERAL, "Purchase"), properties, TrackEventOption.DEFAULT);
 	}
 
 	public void setDeviceTags() {
