@@ -22,6 +22,12 @@ public class GrowthAnalytics {
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthpush.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
+	private static final String TAG_GENERAL = "General";
+	private static final String TAG_GAME = "Game";
+	private static final String TAG_SOCIAL = "Social";
+	private static final String TAG_GROWTHPUSH = "GrowthPush";
+	private static final String TAG_GROWTHMAIL = "GrowthMail";
+
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
