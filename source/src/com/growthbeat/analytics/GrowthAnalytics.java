@@ -22,6 +22,8 @@ public class GrowthAnalytics {
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthpush.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
+	private static final String EVENT = "event";
+	private static final String TAG = "tag";
 	private static final String TAG_GENERAL = "General";
 	private static final String TAG_GAME = "Game";
 	private static final String TAG_SOCIAL = "Social";
@@ -120,6 +122,70 @@ public class GrowthAnalytics {
 				}
 			}
 		}).start();
+
+	}
+
+	public void setUserId(String userId) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "UserId"), userId);
+	}
+
+	public void setAdvertisingId(String advertisingId) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "AdvertisingId"), advertisingId);
+	}
+
+	public void setAge(int age) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Age"), String.valueOf(age));
+	}
+
+	public void setGender(String gender) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Gender"), String.valueOf(gender));
+	}
+
+	public void setLocale(String locale) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Locale"), locale);
+	}
+
+	public void setLanguage(String language) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "langugage"), language);
+	}
+
+	public void setOS(String os) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "OS"), os);
+	}
+
+	public void setTimeZone(String timeZone) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "TimeZone"), timeZone);
+	}
+
+	public void setAppVersion(String appVersion) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "AppVersion"), appVersion);
+	}
+
+	public void setName(String name) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Name"), name);
+	}
+
+	public void setRandom(String random) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Random"), random);
+	}
+
+	public void setLevel(String level) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Level"), level);
+	}
+
+	public void setDevelopment(String development) {
+		setTag(String.format("%s:%s", TAG_GENERAL, "Development"), development);
+	}
+
+	public void open() {
+
+	}
+
+	public void close() {
+
+	}
+
+	public void purchase(int price, String category, String product) {
 
 	}
 
