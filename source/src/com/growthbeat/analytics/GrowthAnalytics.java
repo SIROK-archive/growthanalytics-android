@@ -126,11 +126,11 @@ public class GrowthAnalytics {
 	}
 
 	public void setUserId(String userId) {
-		setTag(String.format("%s:%s", GENERAL, "UserId"), userId);
+		setTag(String.format("%s:%s", GENERAL, "UserID"), userId);
 	}
 
 	public void setAdvertisingId(String advertisingId) {
-		setTag(String.format("%s:%s", GENERAL, "AdvertisingId"), advertisingId);
+		setTag(String.format("%s:%s", GENERAL, "AdvertisingID"), advertisingId);
 	}
 
 	public void setAge(int age) {
@@ -207,12 +207,14 @@ public class GrowthAnalytics {
 				if (GrowthbeatCore.getInstance().getContext() == null)
 					throw new IllegalStateException("GrowthPush is not initialized.");
 
-				setTag("Device", DeviceUtils.getModel());
-				setTag("OS", "Android " + DeviceUtils.getOsVersion());
-				setTag("Language", DeviceUtils.getLanguage());
-				setTag("Time Zone", DeviceUtils.getTimeZone());
-				setTag("Version", AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
-				setTag("Build", AppUtils.getAppBuild(GrowthbeatCore.getInstance().getContext()));
+				// setTag("Device", DeviceUtils.getModel());
+				setOS("Android " + DeviceUtils.getOsVersion());
+				setLanguage(DeviceUtils.getLanguage());
+				setTimeZone(DeviceUtils.getTimeZone());
+				// Add TimeZoneOffset
+				setAppVersion(AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
+				// setTag("Build",
+				// AppUtils.getAppBuild(GrowthbeatCore.getInstance().getContext()));
 
 			}
 
