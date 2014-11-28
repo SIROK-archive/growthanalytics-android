@@ -1,5 +1,6 @@
 package com.growthbeat.analytics;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -186,7 +187,14 @@ public class GrowthAnalytics {
 
 	public void close() {
 		trackEvent(String.format("%s:%s", GENERAL, "Close"), new HashMap<String, String>(), TrackEventOption.DEFAULT);
-		// TODO caliculate session time.
+		ClientEvent openEvent = ClientEvent.load(String.format("%s:%s", GENERAL, "Open"));
+		if (openEvent != null) {
+			Date now = new Date();
+			long time = now.getTime() - openEvent.getCreated().getTime();
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put("time", String.valueOf(time));
+			trackEvent(String.format("%s:%s", GENERAL, "Session"), properties, TrackEventOption.DEFAULT);
+		}
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -207,14 +215,11 @@ public class GrowthAnalytics {
 				if (GrowthbeatCore.getInstance().getContext() == null)
 					throw new IllegalStateException("GrowthPush is not initialized.");
 
-				// setTag("Device", DeviceUtils.getModel());
 				setOS("Android " + DeviceUtils.getOsVersion());
 				setLanguage(DeviceUtils.getLanguage());
 				setTimeZone(DeviceUtils.getTimeZone());
-				// Add TimeZoneOffset
+				setTag(String.format("%s:%s", GENERAL, "TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
 				setAppVersion(AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
-				// setTag("Build",
-				// AppUtils.getAppBuild(GrowthbeatCore.getInstance().getContext()));
 
 			}
 
