@@ -186,15 +186,14 @@ public class GrowthAnalytics {
 	}
 
 	public void close() {
-		trackEvent(String.format("%s:%s", GENERAL, "Close"), new HashMap<String, String>(), TrackEventOption.DEFAULT);
 		ClientEvent openEvent = ClientEvent.load(String.format("%s:%s", GENERAL, "Open"));
+		Map<String, String> properties = new HashMap<String, String>();
 		if (openEvent != null) {
 			Date now = new Date();
 			long time = now.getTime() - openEvent.getCreated().getTime();
-			Map<String, String> properties = new HashMap<String, String>();
 			properties.put("time", String.valueOf(time));
-			trackEvent(String.format("%s:%s", GENERAL, "Session"), properties, TrackEventOption.DEFAULT);
 		}
+		trackEvent(String.format("%s:%s", GENERAL, "Close"), properties, TrackEventOption.DEFAULT);
 	}
 
 	public void purchase(int price, String category, String product) {
