@@ -1,8 +1,11 @@
 package com.growthbeat.analytics;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.UUID;
 
+import android.R;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
@@ -19,12 +22,17 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 public class MainActivity extends ActionBarActivity {
 
+	private SharedPreferences sharedPreferences = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		GrowthAnalytics.getInstance().initialize(getApplicationContext(), "OvN0YOGiqdxYWeBf", "tGPhKbZTDNkJifBmP9CxyOO33wON5Weo");
+
+		sharedPreferences = getSharedPreferences("GrowthAnalyticsSample", Context.MODE_PRIVATE);
 
 		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
 			@Override
@@ -38,14 +46,17 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public void onStart() {
+
 		super.onStart();
+
 		GrowthAnalytics.getInstance().open();
 		GrowthAnalytics.getInstance().setDeviceTags();
 
-		Random random = new Random();
-		int userId = random.nextInt(100);
-		GrowthAnalytics.getInstance().setUserId(String.valueOf(userId));
-		this.sendAdvertisingId();
+		String userId = sharedPreferences.getString("userId", UUID.randomUUID().toString());
+		GrowthAnalytics.getInstance().setUserId(userId);
+
+		sendAdvertisingId();
+
 	}
 
 	@Override
