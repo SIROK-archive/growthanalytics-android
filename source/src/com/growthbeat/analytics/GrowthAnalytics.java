@@ -65,7 +65,7 @@ public class GrowthAnalytics {
 		this.trackEvent(eventId, properties, TrackEventOption.ONCE);
 	}
 
-	public void trackEvent(final String eventId, final Map<String, String> properties, final int option) {
+	public void trackEvent(final String eventId, final Map<String, String> properties, final TrackEventOption option) {
 
 		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
 
@@ -74,22 +74,19 @@ public class GrowthAnalytics {
 			public void run() {
 
 				ClientEvent referencedClientEvent = ClientEvent.load(eventId);
-				if ((option & TrackEventOption.ONCE) != 0 && referencedClientEvent != null) {
+				if ((option == TrackEventOption.ONCE) && referencedClientEvent != null) {
 					GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
 					return;
 				}
 
-				if (referencedClientEvent == null && (option & TrackEventOption.MARK_FIRST_TIME) != 0)
+				if (referencedClientEvent == null && (option == TrackEventOption.MARK_FIRST_TIME))
 					properties.put("first_time", null);
 
 				try {
 
 					ClientEvent clientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, properties);
-					if ((referencedClientEvent == null && (option & TrackEventOption.MARK_FIRST_TIME) != 0)
-							|| (option & TrackEventOption.ONCE) != 0) {
-						ClientEvent.save(clientEvent);
-						GrowthAnalytics.this.logger.info("save event .");
-					}
+					ClientEvent.save(clientEvent);
+					GrowthAnalytics.this.logger.info("save event .");
 
 					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (clientEventId: %s)", clientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
