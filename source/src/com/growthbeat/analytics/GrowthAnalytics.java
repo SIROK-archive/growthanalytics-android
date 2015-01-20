@@ -20,7 +20,7 @@ import com.growthbeat.utils.DeviceUtils;
 public class GrowthAnalytics {
 
 	public static final String LOGGER_DEFAULT_TAG = "GrowthAnalytics";
-	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthpush.com/";
+	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
 	private static final String EVENT = "Event";
