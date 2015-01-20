@@ -3,7 +3,6 @@ package com.growthbeat.analytics;
 import java.io.IOException;
 import java.util.UUID;
 
-import android.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
