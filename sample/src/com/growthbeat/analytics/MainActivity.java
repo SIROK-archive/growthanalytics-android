@@ -24,10 +24,7 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Random random = new Random();
-		int userId = random.nextInt(100);
-		GrowthAnalytics.getInstance().setUserId(String.valueOf(userId));
-		this.sendAdvertisingId();
+		GrowthAnalytics.getInstance().initialize(getApplicationContext(), "OvN0YOGiqdxYWeBf", "tGPhKbZTDNkJifBmP9CxyOO33wON5Weo");
 
 		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
 			@Override
@@ -37,6 +34,24 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		GrowthAnalytics.getInstance().open();
+		GrowthAnalytics.getInstance().setDeviceTags();
+
+		Random random = new Random();
+		int userId = random.nextInt(100);
+		GrowthAnalytics.getInstance().setUserId(String.valueOf(userId));
+		this.sendAdvertisingId();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		GrowthAnalytics.getInstance().close();
 	}
 
 	private void sendAdvertisingId() {
@@ -92,11 +107,6 @@ public class MainActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onUserLeaveHint() {
-		GrowthAnalytics.getInstance().close();
 	}
 
 	@Override
