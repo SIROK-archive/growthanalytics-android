@@ -181,7 +181,8 @@ public class GrowthAnalytics {
 	public void open() {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("referrer", null);
-		trackEvent(String.format("%s:%s", GENERAL, "Open"), properties, TrackEventOption.DEFAULT);
+		String openEventId = String.format("%s:%s", GENERAL, "Open");
+		trackEvent(openEventId, properties, TrackEventOption.DEFAULT);
 		trackEventOnce(String.format("%s:%s", GENERAL, "Install"), properties);
 	}
 
