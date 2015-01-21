@@ -3,6 +3,7 @@ package com.growthbeat.analytics;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import android.content.Context;
 
@@ -134,7 +135,7 @@ public class GrowthAnalytics {
 		if (openEvent != null) {
 			Date now = new Date();
 			long time = now.getTime() - openEvent.getCreated().getTime();
-			properties.put("time", String.valueOf(time));
+		properties.put("time", String.valueOf(time));
 		}
 		track(generateEventId("Close"), properties);
 	}
@@ -151,52 +152,52 @@ public class GrowthAnalytics {
 		tag(generateTagId("UserID"), userId);
 	}
 
-	public void setAdvertisingId(String advertisingId) {
-		tag(generateTagId("AdvertisingID"), advertisingId);
+	public void setName(String name) {
+		tag(generateTagId("Name"), name);
 	}
 
 	public void setAge(int age) {
 		tag(generateTagId("Age"), String.valueOf(age));
 	}
 
-	public void setGender(String gender) {
-		tag(generateTagId("Gender"), String.valueOf(gender));
+	public void setGender(Gender gender) {
+		tag(generateTagId("Gender"), gender.getValue());
 	}
 
-	public void setLocale(String locale) {
-		tag(generateTagId("Locale"), locale);
+	public void setLevel(int level) {
+		tag(generateTagId("Level"), String.valueOf(level));
 	}
 
-	public void setLanguage(String language) {
-		tag(generateTagId("langugage"), language);
+	public void setAdvertisingId(String advertisingId) {
+		tag(generateTagId("AdvertisingID"), advertisingId);
 	}
 
-	public void setOS(String os) {
-		tag(generateTagId("OS"), os);
+	public void setDevelopment(boolean development) {
+		tag(generateTagId("Development"), String.valueOf(development));
 	}
 
-	public void setTimeZone(String timeZone) {
-		tag(generateTagId("TimeZone"), timeZone);
+	public void setOS() {
+		tag(generateTagId("OS"), "Android " + DeviceUtils.getOsVersion());
 	}
 
-	public void setAppVersion(String appVersion) {
-		tag(generateTagId("AppVersion"), appVersion);
+	public void setLanguage() {
+		tag(generateTagId("language"), DeviceUtils.getLanguage());
 	}
 
-	public void setName(String name) {
-		tag(generateTagId("Name"), name);
+	public void setTimeZone() {
+		tag(generateTagId("TimeZone"), DeviceUtils.getTimeZone());
 	}
 
-	public void setRandom(String random) {
-		tag(generateTagId("Random"), random);
+	public void setTimeZoneOffset() {
+		tag(generateTagId("TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
 	}
 
-	public void setLevel(String level) {
-		tag(generateTagId("Level"), level);
+	public void setAppVersion() {
+		tag(generateTagId("AppVersion"), AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
 	}
 
-	public void setDevelopment(String development) {
-		tag(generateTagId("Development"), development);
+	public void setRandom() {
+		tag(generateTagId("Random"), String.valueOf(new Random().nextDouble()));
 	}
 
 	public void setDeviceTags() {
@@ -209,11 +210,11 @@ public class GrowthAnalytics {
 				if (GrowthbeatCore.getInstance().getContext() == null)
 					throw new IllegalStateException("GrowthPush is not initialized.");
 
-				setOS("Android " + DeviceUtils.getOsVersion());
-				setLanguage(DeviceUtils.getLanguage());
-				setTimeZone(DeviceUtils.getTimeZone());
-				tag(generateTagId("TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
-				setAppVersion(AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
+				setOS();
+				setLanguage();
+				setTimeZone();
+				setTimeZoneOffset();
+				setAppVersion();
 
 			}
 
@@ -248,6 +249,22 @@ public class GrowthAnalytics {
 
 	private String generateTagId(String name) {
 		return String.format("Tag:%s:Default:%s", applicationId, name);
+	}
+
+	public static enum Gender {
+
+		MALE("male"), FEMALE("female");
+
+		private String value = null;
+
+		Gender(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
 	}
 
 	private static class Thread extends CatchableThread {
