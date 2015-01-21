@@ -38,8 +38,10 @@ public class ClientEvent extends Model {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("clientId", clientId);
 		params.put("eventId", eventId);
-		for (Map.Entry<String, String> entry : properties.entrySet())
-			params.put(String.format("properties[%s]", entry.getKey()), entry.getValue());
+		if (properties != null)
+			for (Map.Entry<String, String> entry : properties.entrySet())
+				params.put(String.format("properties[%s]", entry.getKey()), entry.getValue());
+
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_events", params);
 
 		return new ClientEvent(jsonObject);
@@ -49,7 +51,7 @@ public class ClientEvent extends Model {
 	public static void save(ClientEvent clientEvent) {
 		if (clientEvent == null)
 			return;
-		GrowthAnalytics.getInstance().getPreference().save(clientEvent.getEventId(), clientEvent.getReducedJsonObject());
+		GrowthAnalytics.getInstance().getPreference().save(clientEvent.getEventId(), clientEvent.getJsonObject());
 	}
 
 	public static ClientEvent load(String eventId) {
@@ -115,21 +117,6 @@ public class ClientEvent extends Model {
 
 		return jsonObject;
 
-	}
-
-	public JSONObject getReducedJsonObject() {
-
-		JSONObject jsonObject = new JSONObject();
-		try {
-			jsonObject.put("id", getId());
-			jsonObject.put("clientId", clientId);
-			jsonObject.put("eventId", eventId);
-			jsonObject.put("created", DateUtils.formatToDateTimeString(getCreated()));
-		} catch (JSONException e) {
-			return null;
-		}
-
-		return jsonObject;
 	}
 
 	@Override
