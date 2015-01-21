@@ -14,8 +14,6 @@ import com.growthbeat.utils.JSONObjectUtils;
 
 public class ClientTag extends Model {
 
-	private String id;
-
 	private String clientId;
 
 	private String tagId;
@@ -45,44 +43,13 @@ public class ClientTag extends Model {
 	}
 
 	public static void save(ClientTag clientTag) {
-
-		JSONObject loadJson = GrowthAnalytics.getInstance().getPreference().get("tags");
-		if (loadJson == null)
-			loadJson = new JSONObject();
-
-		JSONObject jsonObject = clientTag.getJsonObject();
-		try {
-			loadJson.put(clientTag.getTagId(), jsonObject);
-		} catch (JSONException e) {
-		}
-
-		GrowthAnalytics.getInstance().getPreference().save("tags", loadJson);
-
+		if (clientTag == null)
+			return;
+		GrowthAnalytics.getInstance().getPreference().save(clientTag.getTagId(), clientTag.getJsonObject());
 	}
 
 	public static ClientTag load(String tagId) {
-
-		JSONObject loadJson = GrowthAnalytics.getInstance().getPreference().get("tags");
-		if (loadJson == null)
-			return new ClientTag();
-
-		JSONObject json = null;
-		try {
-			json = loadJson.getJSONObject(tagId);
-		} catch (JSONException e) {
-			return null;
-		}
-
-		return new ClientTag(json);
-
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		return new ClientTag(GrowthAnalytics.getInstance().getPreference().get(tagId));
 	}
 
 	public String getClientId() {
@@ -122,7 +89,6 @@ public class ClientTag extends Model {
 
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("id", getId());
 			jsonObject.put("clientId", clientId);
 			jsonObject.put("tagId", tagId);
 			jsonObject.put("value", value);
@@ -142,8 +108,6 @@ public class ClientTag extends Model {
 			return;
 
 		try {
-			if (JSONObjectUtils.hasAndIsNotNull(jsonObject, "id"))
-				setId(jsonObject.getString("id"));
 			if (JSONObjectUtils.hasAndIsNotNull(jsonObject, "clientId"))
 				setClientId(jsonObject.getString("clientId"));
 			if (JSONObjectUtils.hasAndIsNotNull(jsonObject, "tagId"))

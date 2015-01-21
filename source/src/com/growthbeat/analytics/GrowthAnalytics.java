@@ -88,7 +88,7 @@ public class GrowthAnalytics {
 					ClientEvent.save(clientEvent);
 					GrowthAnalytics.this.logger.info("save event .");
 
-					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (clientEventId: %s)", clientEvent.getId()));
+					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (id: %s)", clientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
@@ -113,7 +113,7 @@ public class GrowthAnalytics {
 
 				try {
 					ClientTag clientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
-					GrowthAnalytics.this.logger.info(String.format("Setting tag success. (clientTagId: %s)", clientTag.getId()));
+					GrowthAnalytics.this.logger.info("Setting tag success.");
 					ClientTag.save(clientTag);
 				} catch (GrowthAnalyticsException e) {
 					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
