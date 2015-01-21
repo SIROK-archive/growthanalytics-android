@@ -12,12 +12,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
-
 public class MainActivity extends Activity {
 
 	private SharedPreferences sharedPreferences = null;
+
+	private static final String applicationId = "OvN0YOGiqdxYWeBf";
+	private static final String credentialId = "tGPhKbZTDNkJifBmP9CxyOO33wON5Weo";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +25,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		GrowthAnalytics.getInstance().initialize(getApplicationContext(), "OvN0YOGiqdxYWeBf", "tGPhKbZTDNkJifBmP9CxyOO33wON5Weo");
+		GrowthAnalytics.getInstance().initialize(getApplicationContext(), applicationId, credentialId);
 
 		sharedPreferences = getSharedPreferences("GrowthAnalyticsSample", Context.MODE_PRIVATE);
 
 		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String tag = ((Button) v).getText().toString();
-				GrowthAnalytics.getInstance().setTag("clicked", tag);
+				String value = ((Button) v).getText().toString();
+				GrowthAnalytics.getInstance().tag(String.format("Tag:%s:Custom:Click", applicationId), value);
+				GrowthAnalytics.getInstance().purchase(100, "item", value);
 			}
 		});
 
@@ -49,8 +50,7 @@ public class MainActivity extends Activity {
 
 		String userId = sharedPreferences.getString("userId", UUID.randomUUID().toString());
 		GrowthAnalytics.getInstance().setUserId(userId);
-
-		sendAdvertisingId();
+		GrowthAnalytics.getInstance().setAdvertisingId();
 
 	}
 
@@ -58,23 +58,6 @@ public class MainActivity extends Activity {
 	public void onStop() {
 		super.onStop();
 		GrowthAnalytics.getInstance().close();
-	}
-
-	private void sendAdvertisingId() {
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(MainActivity.this.getApplicationContext());
-					if (adInfo.getId() == null || !adInfo.isLimitAdTrackingEnabled())
-						return;
-					GrowthAnalytics.getInstance().setAdvertisingId(adInfo.getId());
-				} catch (Exception e) {
-				}
-			}
-		}).start();
-
 	}
 
 	@Override

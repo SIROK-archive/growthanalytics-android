@@ -7,6 +7,8 @@ import java.util.Random;
 
 import android.content.Context;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
 import com.growthbeat.CatchableThread;
 import com.growthbeat.GrowthbeatCore;
 import com.growthbeat.Logger;
@@ -177,10 +179,6 @@ public class GrowthAnalytics {
 		tag(generateTagId("Level"), String.valueOf(level));
 	}
 
-	public void setAdvertisingId(String advertisingId) {
-		tag(generateTagId("AdvertisingID"), advertisingId);
-	}
-
 	public void setDevelopment(boolean development) {
 		tag(generateTagId("Development"), String.valueOf(development));
 	}
@@ -207,6 +205,21 @@ public class GrowthAnalytics {
 
 	public void setRandom() {
 		tag(generateTagId("Random"), String.valueOf(new Random().nextDouble()));
+	}
+
+	public void setAdvertisingId() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(GrowthbeatCore.getInstance().getContext());
+					if (adInfo.getId() == null || !adInfo.isLimitAdTrackingEnabled())
+						return;
+					tag(generateTagId("AdvertisingID"), adInfo.getId());
+				} catch (Exception e) {
+				}
+			}
+		}).start();
 	}
 
 	public void setDeviceTags() {
