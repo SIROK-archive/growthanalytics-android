@@ -131,20 +131,19 @@ public class GrowthAnalytics {
 
 	public void close() {
 		ClientEvent openEvent = ClientEvent.load(generateEventId("Open"));
+		if (openEvent == null)
+			return;
+		long time = new Date().getTime() - openEvent.getCreated().getTime();
 		Map<String, String> properties = new HashMap<String, String>();
-		if (openEvent != null) {
-			Date now = new Date();
-			long time = now.getTime() - openEvent.getCreated().getTime();
 		properties.put("time", String.valueOf(time));
-		}
 		track(generateEventId("Close"), properties);
 	}
 
 	public void purchase(int price, String category, String product) {
 		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("Price", String.valueOf(price));
-		properties.put("Category", category);
-		properties.put("Product", product);
+		properties.put("price", String.valueOf(price));
+		properties.put("category", category);
+		properties.put("product", product);
 		track(generateEventId("Purchase"), properties);
 	}
 
@@ -201,25 +200,11 @@ public class GrowthAnalytics {
 	}
 
 	public void setDeviceTags() {
-
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				if (GrowthbeatCore.getInstance().getContext() == null)
-					throw new IllegalStateException("GrowthPush is not initialized.");
-
-				setOS();
-				setLanguage();
-				setTimeZone();
-				setTimeZoneOffset();
-				setAppVersion();
-
-			}
-
-		}).start();
-
+		setOS();
+		setLanguage();
+		setTimeZone();
+		setTimeZoneOffset();
+		setAppVersion();
 	}
 
 	public String getApplicationId() {
@@ -254,7 +239,6 @@ public class GrowthAnalytics {
 	public static enum Gender {
 
 		MALE("male"), FEMALE("female");
-
 		private String value = null;
 
 		Gender(String value) {
