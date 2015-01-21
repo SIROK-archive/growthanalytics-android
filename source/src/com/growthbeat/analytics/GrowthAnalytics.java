@@ -29,8 +29,8 @@ public class GrowthAnalytics {
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
 	private final Preference preference = new Preference(PREFERENCE_DEFAULT_FILE_NAME);
 
-	private String applicationId;
-	private String credentialId;
+	private String applicationId = null;
+	private String credentialId = null;
 
 	private GrowthAnalytics() {
 		super();
@@ -64,31 +64,36 @@ public class GrowthAnalytics {
 
 	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
 
-		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
-
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
-				ClientEvent referencedClientEvent = ClientEvent.load(eventId);
-				if ((option == TrackOption.ONCE) && referencedClientEvent != null) {
-					GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
-					return;
+				logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
+
+				int counter = 0;
+				ClientEvent existingClientEvent = ClientEvent.load(eventId);
+
+				if (existingClientEvent != null) {
+					if (option == TrackOption.ONCE) {
+						logger.info(String.format("Event already sent with once option. (eventId: %s)", eventId));
+						return;
+					}
+					counter = Integer.valueOf(existingClientEvent.getProperties().get("counter"));
 				}
 
-				if (referencedClientEvent == null && (option == TrackOption.COUNTER))
-					properties.put("first_time", null);
+				if (option == TrackOption.COUNTER) {
+					properties.put("counter", String.valueOf(counter));
+				}
 
 				try {
-
-					ClientEvent clientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, properties);
-					ClientEvent.save(clientEvent);
-					GrowthAnalytics.this.logger.info("save event .");
-
-					GrowthAnalytics.this.logger.info(String.format("Tracking event success. (id: %s)", clientEvent.getId()));
+					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
+							properties);
+					ClientEvent.save(createdClientEvent);
+					logger.info(String.format("Tracking event success. (id: %s)", createdClientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
-					GrowthAnalytics.this.logger.info(String.format("Tracking event fail. %s", e.getMessage()));
+					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
+
 			}
 		}).start();
 
@@ -100,25 +105,30 @@ public class GrowthAnalytics {
 
 	public void tag(final String tagId, final String value) {
 
-		this.logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
-
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
-				ClientTag referecedClientTag = ClientTag.load(tagId);
-				if (referecedClientTag != null && (value != null && value.equals(referecedClientTag.getValue()))) {
-					GrowthAnalytics.this.logger.info(String.format("Already exists tag... (tagId: %s, value: %s)", tagId, value));
-					return;
+				logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
+
+				ClientTag existingClientTag = ClientTag.load(tagId);
+
+				if (existingClientTag != null) {
+					if (value == existingClientTag.getValue() || (value != null && value.equals(existingClientTag.getValue()))) {
+						logger.info(String.format("Tag exists with the same value. (tagId: %s, value: %s)", tagId, value));
+						return;
+					}
+					logger.info(String.format("Tag exists with the other value. (tagId: %s, value: %s)", tagId, value));
 				}
 
 				try {
-					ClientTag clientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
-					GrowthAnalytics.this.logger.info("Setting tag success.");
-					ClientTag.save(clientTag);
+					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
+					ClientTag.save(createdClientTag);
+					logger.info("Setting tag success.");
 				} catch (GrowthAnalyticsException e) {
-					GrowthAnalytics.this.logger.info(String.format("Setting tag fail. %s", e.getMessage()));
+					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
+
 			}
 		}).start();
 
