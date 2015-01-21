@@ -57,12 +57,12 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackEvent(final String eventId) {
-		this.trackEvent(eventId, new HashMap<String, String>(), TrackEventOption.DEFAULT);
+	public void trackEvent(String openEventId) {
+		trackEvent(openEventId, null);
 	}
 
-	public void trackEventOnce(final String eventId, final Map<String, String> properties) {
-		this.trackEvent(eventId, properties, TrackEventOption.ONCE);
+	public void trackEvent(String openEventId, Map<String, String> properties) {
+		trackEvent(openEventId, properties, null);
 	}
 
 	public void trackEvent(final String eventId, final Map<String, String> properties, final TrackEventOption option) {
@@ -79,7 +79,7 @@ public class GrowthAnalytics {
 					return;
 				}
 
-				if (referencedClientEvent == null && (option == TrackEventOption.MARK_FIRST_TIME))
+				if (referencedClientEvent == null && (option == TrackEventOption.COUNTER))
 					properties.put("first_time", null);
 
 				try {
@@ -95,6 +95,10 @@ public class GrowthAnalytics {
 			}
 		}).start();
 
+	}
+
+	public void setTag(final String tagId) {
+		setTag(tagId, null);
 	}
 
 	public void setTag(final String tagId, final String value) {
@@ -179,8 +183,8 @@ public class GrowthAnalytics {
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("referrer", null);
 		String openEventId = String.format("%s:%s", GENERAL, "Open");
-		trackEvent(openEventId, properties, TrackEventOption.DEFAULT);
-		trackEventOnce(String.format("%s:%s", GENERAL, "Install"), properties);
+		trackEvent(openEventId, properties);
+		trackEvent(String.format("%s:%s", GENERAL, "Install"), properties, TrackEventOption.ONCE);
 	}
 
 	public void close() {
@@ -191,7 +195,7 @@ public class GrowthAnalytics {
 			long time = now.getTime() - openEvent.getCreated().getTime();
 			properties.put("time", String.valueOf(time));
 		}
-		trackEvent(String.format("%s:%s", GENERAL, "Close"), properties, TrackEventOption.DEFAULT);
+		trackEvent(String.format("%s:%s", GENERAL, "Close"), properties);
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -199,7 +203,7 @@ public class GrowthAnalytics {
 		properties.put("Price", String.valueOf(price));
 		properties.put("Category", category);
 		properties.put("Product", product);
-		trackEvent(String.format("%s:%s", GENERAL, "Purchase"), properties, TrackEventOption.DEFAULT);
+		trackEvent(String.format("%s:%s", GENERAL, "Purchase"), properties);
 	}
 
 	public void setDeviceTags() {
