@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 public class MainActivity extends Activity {
 
@@ -32,9 +31,9 @@ public class MainActivity extends Activity {
 		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String value = ((Button) v).getText().toString();
-				GrowthAnalytics.getInstance().tag(String.format("Tag:%s:Custom:Click", applicationId), value);
-				GrowthAnalytics.getInstance().purchase(100, "item", value);
+				String product = "item";
+				GrowthAnalytics.getInstance().tag(String.format("Tag:%s:Custom:Click", applicationId), product);
+				GrowthAnalytics.getInstance().purchase(100, "item", product);
 			}
 		});
 
