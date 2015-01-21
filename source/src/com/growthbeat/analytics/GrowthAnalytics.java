@@ -12,7 +12,7 @@ import com.growthbeat.Logger;
 import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
-import com.growthbeat.analytics.options.TrackEventOption;
+import com.growthbeat.analytics.options.TrackOption;
 import com.growthbeat.http.GrowthbeatHttpClient;
 import com.growthbeat.utils.AppUtils;
 import com.growthbeat.utils.DeviceUtils;
@@ -22,14 +22,6 @@ public class GrowthAnalytics {
 	public static final String LOGGER_DEFAULT_TAG = "GrowthAnalytics";
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
-
-	private static final String EVENT = "Event";
-	private static final String TAG = "Tag";
-	private static final String GENERAL = "General";
-	private static final String GAME = "Game";
-	private static final String SOCIAL = "Social";
-	private static final String GROWTHPUSH = "GrowthPush";
-	private static final String GROWTHMAIL = "GrowthMail";
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
@@ -57,15 +49,19 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackEvent(String openEventId) {
-		trackEvent(openEventId, null);
+	public void track(final String openEventId) {
+		track(openEventId, null, null);
 	}
 
-	public void trackEvent(String openEventId, Map<String, String> properties) {
-		trackEvent(openEventId, properties, null);
+	public void track(final String openEventId, final Map<String, String> properties) {
+		track(openEventId, properties, null);
 	}
 
-	public void trackEvent(final String eventId, final Map<String, String> properties, final TrackEventOption option) {
+	public void track(final String openEventId, final TrackOption option) {
+		track(openEventId, null, option);
+	}
+
+	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
 
 		this.logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
 
@@ -74,12 +70,12 @@ public class GrowthAnalytics {
 			public void run() {
 
 				ClientEvent referencedClientEvent = ClientEvent.load(eventId);
-				if ((option == TrackEventOption.ONCE) && referencedClientEvent != null) {
+				if ((option == TrackOption.ONCE) && referencedClientEvent != null) {
 					GrowthAnalytics.this.logger.info(String.format("This event send only once. (eventId: %s)", eventId));
 					return;
 				}
 
-				if (referencedClientEvent == null && (option == TrackEventOption.COUNTER))
+				if (referencedClientEvent == null && (option == TrackOption.COUNTER))
 					properties.put("first_time", null);
 
 				try {
@@ -97,11 +93,11 @@ public class GrowthAnalytics {
 
 	}
 
-	public void setTag(final String tagId) {
-		setTag(tagId, null);
+	public void tag(final String tagId) {
+		tag(tagId, null);
 	}
 
-	public void setTag(final String tagId, final String value) {
+	public void tag(final String tagId, final String value) {
 
 		this.logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
 
@@ -127,75 +123,20 @@ public class GrowthAnalytics {
 
 	}
 
-	public void setUserId(String userId) {
-		setTag(String.format("%s:%s", GENERAL, "UserID"), userId);
-	}
-
-	public void setAdvertisingId(String advertisingId) {
-		setTag(String.format("%s:%s", GENERAL, "AdvertisingID"), advertisingId);
-	}
-
-	public void setAge(int age) {
-		setTag(String.format("%s:%s", GENERAL, "Age"), String.valueOf(age));
-	}
-
-	public void setGender(String gender) {
-		setTag(String.format("%s:%s", GENERAL, "Gender"), String.valueOf(gender));
-	}
-
-	public void setLocale(String locale) {
-		setTag(String.format("%s:%s", GENERAL, "Locale"), locale);
-	}
-
-	public void setLanguage(String language) {
-		setTag(String.format("%s:%s", GENERAL, "langugage"), language);
-	}
-
-	public void setOS(String os) {
-		setTag(String.format("%s:%s", GENERAL, "OS"), os);
-	}
-
-	public void setTimeZone(String timeZone) {
-		setTag(String.format("%s:%s", GENERAL, "TimeZone"), timeZone);
-	}
-
-	public void setAppVersion(String appVersion) {
-		setTag(String.format("%s:%s", GENERAL, "AppVersion"), appVersion);
-	}
-
-	public void setName(String name) {
-		setTag(String.format("%s:%s", GENERAL, "Name"), name);
-	}
-
-	public void setRandom(String random) {
-		setTag(String.format("%s:%s", GENERAL, "Random"), random);
-	}
-
-	public void setLevel(String level) {
-		setTag(String.format("%s:%s", GENERAL, "Level"), level);
-	}
-
-	public void setDevelopment(String development) {
-		setTag(String.format("%s:%s", GENERAL, "Development"), development);
-	}
-
 	public void open() {
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("referrer", null);
-		String openEventId = String.format("%s:%s", GENERAL, "Open");
-		trackEvent(openEventId, properties);
-		trackEvent(String.format("%s:%s", GENERAL, "Install"), properties, TrackEventOption.ONCE);
+		track(generateEventId("Open"));
+		track(generateEventId("Install"), TrackOption.ONCE);
 	}
 
 	public void close() {
-		ClientEvent openEvent = ClientEvent.load(String.format("%s:%s", GENERAL, "Open"));
+		ClientEvent openEvent = ClientEvent.load(generateEventId("Open"));
 		Map<String, String> properties = new HashMap<String, String>();
 		if (openEvent != null) {
 			Date now = new Date();
 			long time = now.getTime() - openEvent.getCreated().getTime();
 			properties.put("time", String.valueOf(time));
 		}
-		trackEvent(String.format("%s:%s", GENERAL, "Close"), properties);
+		track(generateEventId("Close"), properties);
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -203,7 +144,59 @@ public class GrowthAnalytics {
 		properties.put("Price", String.valueOf(price));
 		properties.put("Category", category);
 		properties.put("Product", product);
-		trackEvent(String.format("%s:%s", GENERAL, "Purchase"), properties);
+		track(generateEventId("Purchase"), properties);
+	}
+
+	public void setUserId(String userId) {
+		tag(generateTagId("UserID"), userId);
+	}
+
+	public void setAdvertisingId(String advertisingId) {
+		tag(generateTagId("AdvertisingID"), advertisingId);
+	}
+
+	public void setAge(int age) {
+		tag(generateTagId("Age"), String.valueOf(age));
+	}
+
+	public void setGender(String gender) {
+		tag(generateTagId("Gender"), String.valueOf(gender));
+	}
+
+	public void setLocale(String locale) {
+		tag(generateTagId("Locale"), locale);
+	}
+
+	public void setLanguage(String language) {
+		tag(generateTagId("langugage"), language);
+	}
+
+	public void setOS(String os) {
+		tag(generateTagId("OS"), os);
+	}
+
+	public void setTimeZone(String timeZone) {
+		tag(generateTagId("TimeZone"), timeZone);
+	}
+
+	public void setAppVersion(String appVersion) {
+		tag(generateTagId("AppVersion"), appVersion);
+	}
+
+	public void setName(String name) {
+		tag(generateTagId("Name"), name);
+	}
+
+	public void setRandom(String random) {
+		tag(generateTagId("Random"), random);
+	}
+
+	public void setLevel(String level) {
+		tag(generateTagId("Level"), level);
+	}
+
+	public void setDevelopment(String development) {
+		tag(generateTagId("Development"), development);
 	}
 
 	public void setDeviceTags() {
@@ -219,7 +212,7 @@ public class GrowthAnalytics {
 				setOS("Android " + DeviceUtils.getOsVersion());
 				setLanguage(DeviceUtils.getLanguage());
 				setTimeZone(DeviceUtils.getTimeZone());
-				setTag(String.format("%s:%s", GENERAL, "TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
+				tag(generateTagId("TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
 				setAppVersion(AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
 
 			}
@@ -232,16 +225,8 @@ public class GrowthAnalytics {
 		return applicationId;
 	}
 
-	public void setApplicationId(String applicationId) {
-		this.applicationId = applicationId;
-	}
-
 	public String getCredentialId() {
 		return credentialId;
-	}
-
-	public void setCredentialId(String credentialId) {
-		this.credentialId = credentialId;
 	}
 
 	public Logger getLogger() {
@@ -254,6 +239,15 @@ public class GrowthAnalytics {
 
 	public Preference getPreference() {
 		return preference;
+	}
+
+	private String generateEventId(String name) {
+
+		return String.format("Event:%s:Default:%s", applicationId, name);
+	}
+
+	private String generateTagId(String name) {
+		return String.format("Tag:%s:Default:%s", applicationId, name);
 	}
 
 	private static class Thread extends CatchableThread {

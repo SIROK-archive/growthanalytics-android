@@ -1,5 +1,5 @@
 package com.growthbeat.analytics.options;
 
-public enum TrackEventOption {
+public enum TrackOption {
 	ONCE, COUNTER;
 }
