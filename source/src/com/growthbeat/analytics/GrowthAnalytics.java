@@ -183,6 +183,10 @@ public class GrowthAnalytics {
 		tag(generateTagId("Development"), String.valueOf(development));
 	}
 
+	public void setDeviceModel() {
+		tag(generateTagId("DeviceModel"), DeviceUtils.getModel());
+	}
+
 	public void setOS() {
 		tag(generateTagId("OS"), "Android " + DeviceUtils.getOsVersion());
 	}
@@ -222,7 +226,8 @@ public class GrowthAnalytics {
 		}).start();
 	}
 
-	public void setDeviceTags() {
+	public void setBasicTags() {
+		setDeviceModel();
 		setOS();
 		setLanguage();
 		setTimeZone();

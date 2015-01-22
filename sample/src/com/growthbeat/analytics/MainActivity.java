@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 		super.onStart();
 
 		GrowthAnalytics.getInstance().open();
-		GrowthAnalytics.getInstance().setDeviceTags();
+		GrowthAnalytics.getInstance().setBasicTags();
 
 		String userId = sharedPreferences.getString("userId", UUID.randomUUID().toString());
 		GrowthAnalytics.getInstance().setUserId(userId);
