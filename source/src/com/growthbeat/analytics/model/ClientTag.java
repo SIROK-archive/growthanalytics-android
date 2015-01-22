@@ -30,12 +30,13 @@ public class ClientTag extends Model {
 		setJsonObject(jsonObject);
 	}
 
-	public static ClientTag create(String clientId, String tagId, String value) {
+	public static ClientTag create(String clientId, String tagId, String value, String credentialId) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("clientId", clientId);
 		params.put("tagId", tagId);
 		params.put("value", value);
+		params.put("credentialId", credentialId);
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_tags", params);
 
 		return new ClientTag(jsonObject);

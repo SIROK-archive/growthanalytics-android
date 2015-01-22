@@ -89,7 +89,7 @@ public class GrowthAnalytics {
 
 				try {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
-							properties);
+							properties, credentialId);
 					ClientEvent.save(createdClientEvent);
 					logger.info(String.format("Tracking event success. (id: %s)", createdClientEvent.getId()));
 				} catch (GrowthAnalyticsException e) {
@@ -124,7 +124,8 @@ public class GrowthAnalytics {
 				}
 
 				try {
-					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value);
+					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
+							credentialId);
 					ClientTag.save(createdClientTag);
 					logger.info("Setting tag success.");
 				} catch (GrowthAnalyticsException e) {
