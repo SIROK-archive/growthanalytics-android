@@ -15,8 +15,8 @@ public class MainActivity extends Activity {
 
 	private SharedPreferences sharedPreferences = null;
 
-	private static final String applicationId = "OvN0YOGiqdxYWeBf";
-	private static final String credentialId = "tGPhKbZTDNkJifBmP9CxyOO33wON5Weo";
+	private static final String applicationId = "OyVa3zboPjHVjsDC";
+	private static final String credentialId = "3EKydeJ0imxJ5WqS22FJfdVamFLgu7XA";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
