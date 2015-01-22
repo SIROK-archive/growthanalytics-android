@@ -55,7 +55,10 @@ public class ClientEvent extends Model {
 	}
 
 	public static ClientEvent load(String eventId) {
-		return new ClientEvent(GrowthAnalytics.getInstance().getPreference().get(eventId));
+		JSONObject jsonObject = GrowthAnalytics.getInstance().getPreference().get(eventId);
+		if (jsonObject == null)
+			return null;
+		return new ClientEvent(jsonObject);
 	}
 
 	public String getId() {

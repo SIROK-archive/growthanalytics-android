@@ -49,7 +49,10 @@ public class ClientTag extends Model {
 	}
 
 	public static ClientTag load(String tagId) {
-		return new ClientTag(GrowthAnalytics.getInstance().getPreference().get(tagId));
+		JSONObject jsonObject = GrowthAnalytics.getInstance().getPreference().get(tagId);
+		if (jsonObject == null)
+			return null;
+		return new ClientTag(jsonObject);
 	}
 
 	public String getClientId() {
