@@ -72,19 +72,24 @@ public class GrowthAnalytics {
 
 				logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
 
-				int counter = 0;
 				ClientEvent existingClientEvent = ClientEvent.load(eventId);
 
-				if (existingClientEvent != null) {
-					if (option == TrackOption.ONCE) {
+				if (option == TrackOption.ONCE) {
+					if (existingClientEvent != null) {
 						logger.info(String.format("Event already sent with once option. (eventId: %s)", eventId));
 						return;
 					}
-					counter = Integer.valueOf(existingClientEvent.getProperties().get("counter"));
 				}
 
 				if (option == TrackOption.COUNTER) {
-					properties.put("counter", String.valueOf(counter));
+					int counter = 0;
+					if (existingClientEvent != null && existingClientEvent.getProperties() != null) {
+						try {
+							counter = Integer.valueOf(existingClientEvent.getProperties().get("counter"));
+						} catch (NumberFormatException e) {
+						}
+					}
+					properties.put("counter", String.valueOf(counter + 1));
 				}
 
 				try {
