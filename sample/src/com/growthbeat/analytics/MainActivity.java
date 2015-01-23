@@ -48,8 +48,12 @@ public class MainActivity extends Activity {
 		GrowthAnalytics.getInstance().setBasicTags();
 
 		String userId = sharedPreferences.getString("userId", UUID.randomUUID().toString());
+		sharedPreferences.edit().putString("userId", userId).commit();
+
 		GrowthAnalytics.getInstance().setUserId(userId);
 		GrowthAnalytics.getInstance().setAdvertisingId();
+
+		GrowthAnalytics.getInstance().setRandom();
 
 	}
 
