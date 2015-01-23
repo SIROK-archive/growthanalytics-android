@@ -11,6 +11,7 @@
 # Generated files
 bin/
 gen/
+lint.xml
 
 # Gradle files
 .gradle/
@@ -24,3 +25,9 @@ proguard/
 
 # Log Files
 *.log
+
+# Eclipse project files
+.classpath
+
+.idea
+.DS_Store

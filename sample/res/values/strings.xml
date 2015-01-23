@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GrowthAnalytics-sample</string>
+    <string name="title">Growth Analytics</string>
+    <string name="item_button_text">Buy item.</string>
+
+</resources>
