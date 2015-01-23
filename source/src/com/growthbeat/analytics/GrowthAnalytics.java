@@ -96,7 +96,7 @@ public class GrowthAnalytics {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
 							properties, credentialId);
 					ClientEvent.save(createdClientEvent);
-					logger.info(String.format("Tracking event success. (id: %s)", createdClientEvent.getId()));
+					logger.info(String.format("Tracking event success. (id: %s, eventId: %s)", createdClientEvent.getId(), eventId));
 				} catch (GrowthAnalyticsException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
@@ -132,7 +132,7 @@ public class GrowthAnalytics {
 					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
 							credentialId);
 					ClientTag.save(createdClientTag);
-					logger.info("Setting tag success.");
+					logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
 				} catch (GrowthAnalyticsException e) {
 					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
@@ -198,7 +198,7 @@ public class GrowthAnalytics {
 	}
 
 	public void setLanguage() {
-		tag(generateTagId("language"), DeviceUtils.getLanguage());
+		tag(generateTagId("Language"), DeviceUtils.getLanguage());
 	}
 
 	public void setTimeZone() {
