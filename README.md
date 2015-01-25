@@ -16,14 +16,14 @@
 
 1. Write following code in MainActivity's onStart
 
-	```objc
+	```java
 	GrowthAnalytics.getInstance().start();
 	GrowthAnalytics.getInstance().setBasicTags();
 	```
 
 1. Write following code in MainActivity's onStop
 
-	```objc
+	```java
 	GrowthAnalytics.getInstance().stop();
 	```
 
