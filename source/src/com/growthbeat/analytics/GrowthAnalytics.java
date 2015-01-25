@@ -70,7 +70,9 @@ public class GrowthAnalytics {
 			@Override
 			public void run() {
 
-				logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
+				logger.info(String.format("Track event... (eventId: %s)", eventId));
+
+				Map<String, String> processedProperties = (properties != null) ? properties : new HashMap<String, String>();
 
 				ClientEvent existingClientEvent = ClientEvent.load(eventId);
 
@@ -89,14 +91,15 @@ public class GrowthAnalytics {
 						} catch (NumberFormatException e) {
 						}
 					}
-					properties.put("counter", String.valueOf(counter + 1));
+					processedProperties.put("counter", String.valueOf(counter + 1));
 				}
 
 				try {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
-							properties, credentialId);
+							processedProperties, credentialId);
 					ClientEvent.save(createdClientEvent);
-					logger.info(String.format("Tracking event success. (id: %s, eventId: %s)", createdClientEvent.getId(), eventId));
+					logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)", createdClientEvent.getId(),
+							eventId, processedProperties));
 				} catch (GrowthbeatException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
