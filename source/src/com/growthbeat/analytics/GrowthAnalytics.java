@@ -11,6 +11,7 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
 import com.growthbeat.CatchableThread;
 import com.growthbeat.GrowthbeatCore;
+import com.growthbeat.GrowthbeatException;
 import com.growthbeat.Logger;
 import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
@@ -52,16 +53,16 @@ public class GrowthAnalytics {
 
 	}
 
-	public void track(final String openEventId) {
-		track(openEventId, null, null);
+	public void track(final String eventId) {
+		track(eventId, null, null);
 	}
 
-	public void track(final String openEventId, final Map<String, String> properties) {
-		track(openEventId, properties, null);
+	public void track(final String eventId, final Map<String, String> properties) {
+		track(eventId, properties, null);
 	}
 
-	public void track(final String openEventId, final TrackOption option) {
-		track(openEventId, null, option);
+	public void track(final String eventId, final TrackOption option) {
+		track(eventId, null, option);
 	}
 
 	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
@@ -97,7 +98,7 @@ public class GrowthAnalytics {
 							properties, credentialId);
 					ClientEvent.save(createdClientEvent);
 					logger.info(String.format("Tracking event success. (id: %s, eventId: %s)", createdClientEvent.getId(), eventId));
-				} catch (GrowthAnalyticsException e) {
+				} catch (GrowthbeatException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
 
@@ -133,7 +134,7 @@ public class GrowthAnalytics {
 							credentialId);
 					ClientTag.save(createdClientTag);
 					logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
-				} catch (GrowthAnalyticsException e) {
+				} catch (GrowthbeatException e) {
 					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
 
@@ -143,7 +144,7 @@ public class GrowthAnalytics {
 	}
 
 	public void open() {
-		track(generateEventId("Open"));
+		track(generateEventId("Open"), TrackOption.COUNTER);
 		track(generateEventId("Install"), TrackOption.ONCE);
 	}
 
@@ -262,7 +263,6 @@ public class GrowthAnalytics {
 	}
 
 	private String generateEventId(String name) {
-
 		return String.format("Event:%s:Default:%s", applicationId, name);
 	}
 
