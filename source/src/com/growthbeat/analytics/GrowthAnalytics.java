@@ -16,7 +16,6 @@ import com.growthbeat.Logger;
 import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
-import com.growthbeat.analytics.options.TrackOption;
 import com.growthbeat.http.GrowthbeatHttpClient;
 import com.growthbeat.utils.AppUtils;
 import com.growthbeat.utils.DeviceUtils;
@@ -268,6 +267,10 @@ public class GrowthAnalytics {
 
 	private String generateTagId(String name) {
 		return String.format("Tag:%s:Default:%s", applicationId, name);
+	}
+
+	public static enum TrackOption {
+		ONCE, COUNTER;
 	}
 
 	public static enum Gender {

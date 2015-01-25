@@ -15,16 +15,13 @@ public class MainActivity extends Activity {
 
 	private SharedPreferences sharedPreferences = null;
 
-	private static final String applicationId = "OyVa3zboPjHVjsDC";
-	private static final String credentialId = "3EKydeJ0imxJ5WqS22FJfdVamFLgu7XA";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		GrowthAnalytics.getInstance().initialize(getApplicationContext(), applicationId, credentialId);
+		GrowthAnalytics.getInstance().initialize(getApplicationContext(), "OyVa3zboPjHVjsDC", "3EKydeJ0imxJ5WqS22FJfdVamFLgu7XA");
 
 		sharedPreferences = getSharedPreferences("GrowthAnalyticsSample", Context.MODE_PRIVATE);
 
@@ -32,7 +29,6 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String product = "item";
-				GrowthAnalytics.getInstance().tag(String.format("Tag:%s:Custom:Click", applicationId), product);
 				GrowthAnalytics.getInstance().purchase(100, "item", product);
 			}
 		});
