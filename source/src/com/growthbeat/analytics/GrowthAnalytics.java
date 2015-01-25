@@ -206,7 +206,7 @@ public class GrowthAnalytics {
 	}
 
 	public void setTimeZoneOffset() {
-		tag(generateTagId("TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
+		tag(generateTagId("TimeZoneOffset"), String.valueOf(DeviceUtils.getTimeZoneOffset()));
 	}
 
 	public void setAppVersion() {
