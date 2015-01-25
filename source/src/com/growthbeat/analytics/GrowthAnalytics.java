@@ -11,11 +11,11 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
 import com.growthbeat.CatchableThread;
 import com.growthbeat.GrowthbeatCore;
+import com.growthbeat.GrowthbeatException;
 import com.growthbeat.Logger;
 import com.growthbeat.Preference;
 import com.growthbeat.analytics.model.ClientEvent;
 import com.growthbeat.analytics.model.ClientTag;
-import com.growthbeat.analytics.options.TrackOption;
 import com.growthbeat.http.GrowthbeatHttpClient;
 import com.growthbeat.utils.AppUtils;
 import com.growthbeat.utils.DeviceUtils;
@@ -33,6 +33,8 @@ public class GrowthAnalytics {
 
 	private String applicationId = null;
 	private String credentialId = null;
+
+	private Date openDate = null;
 
 	private GrowthAnalytics() {
 		super();
@@ -52,16 +54,16 @@ public class GrowthAnalytics {
 
 	}
 
-	public void track(final String openEventId) {
-		track(openEventId, null, null);
+	public void track(final String eventId) {
+		track(eventId, null, null);
 	}
 
-	public void track(final String openEventId, final Map<String, String> properties) {
-		track(openEventId, properties, null);
+	public void track(final String eventId, final Map<String, String> properties) {
+		track(eventId, properties, null);
 	}
 
-	public void track(final String openEventId, final TrackOption option) {
-		track(openEventId, null, option);
+	public void track(final String eventId, final TrackOption option) {
+		track(eventId, null, option);
 	}
 
 	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
@@ -70,7 +72,9 @@ public class GrowthAnalytics {
 			@Override
 			public void run() {
 
-				logger.info(String.format("Track event... (eventId: %s, properties: %s)", eventId, properties));
+				logger.info(String.format("Track event... (eventId: %s)", eventId));
+
+				Map<String, String> processedProperties = (properties != null) ? properties : new HashMap<String, String>();
 
 				ClientEvent existingClientEvent = ClientEvent.load(eventId);
 
@@ -89,15 +93,16 @@ public class GrowthAnalytics {
 						} catch (NumberFormatException e) {
 						}
 					}
-					properties.put("counter", String.valueOf(counter + 1));
+					processedProperties.put("counter", String.valueOf(counter + 1));
 				}
 
 				try {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
-							properties, credentialId);
+							processedProperties, credentialId);
 					ClientEvent.save(createdClientEvent);
-					logger.info(String.format("Tracking event success. (id: %s, eventId: %s)", createdClientEvent.getId(), eventId));
-				} catch (GrowthAnalyticsException e) {
+					logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)", createdClientEvent.getId(),
+							eventId, processedProperties));
+				} catch (GrowthbeatException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
 
@@ -133,7 +138,7 @@ public class GrowthAnalytics {
 							credentialId);
 					ClientTag.save(createdClientTag);
 					logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
-				} catch (GrowthAnalyticsException e) {
+				} catch (GrowthbeatException e) {
 					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
 
@@ -143,15 +148,16 @@ public class GrowthAnalytics {
 	}
 
 	public void open() {
-		track(generateEventId("Open"));
+		openDate = new Date();
+		track(generateEventId("Open"), TrackOption.COUNTER);
 		track(generateEventId("Install"), TrackOption.ONCE);
 	}
 
 	public void close() {
-		ClientEvent openEvent = ClientEvent.load(generateEventId("Open"));
-		if (openEvent == null)
+		if (openDate == null)
 			return;
-		long time = new Date().getTime() - openEvent.getCreated().getTime();
+		long time = (new Date().getTime() - openDate.getTime()) / 1000;
+		openDate = null;
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("time", String.valueOf(time));
 		track(generateEventId("Close"), properties);
@@ -206,7 +212,7 @@ public class GrowthAnalytics {
 	}
 
 	public void setTimeZoneOffset() {
-		tag(generateTagId("TimeZoneOffset"), DeviceUtils.getTimeZoneOffset());
+		tag(generateTagId("TimeZoneOffset"), String.valueOf(DeviceUtils.getTimeZoneOffset()));
 	}
 
 	public void setAppVersion() {
@@ -262,12 +268,15 @@ public class GrowthAnalytics {
 	}
 
 	private String generateEventId(String name) {
-
 		return String.format("Event:%s:Default:%s", applicationId, name);
 	}
 
 	private String generateTagId(String name) {
 		return String.format("Tag:%s:Default:%s", applicationId, name);
+	}
+
+	public static enum TrackOption {
+		ONCE, COUNTER;
 	}
 
 	public static enum Gender {
