@@ -34,6 +34,8 @@ public class GrowthAnalytics {
 	private String applicationId = null;
 	private String credentialId = null;
 
+	private Date openDate = null;
+
 	private GrowthAnalytics() {
 		super();
 	}
@@ -146,15 +148,16 @@ public class GrowthAnalytics {
 	}
 
 	public void open() {
+		openDate = new Date();
 		track(generateEventId("Open"), TrackOption.COUNTER);
 		track(generateEventId("Install"), TrackOption.ONCE);
 	}
 
 	public void close() {
-		ClientEvent openEvent = ClientEvent.load(generateEventId("Open"));
-		if (openEvent == null)
+		if (openDate == null)
 			return;
-		long time = new Date().getTime() - openEvent.getCreated().getTime();
+		long time = (new Date().getTime() - openDate.getTime()) / 1000;
+		openDate = null;
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("time", String.valueOf(time));
 		track(generateEventId("Close"), properties);
