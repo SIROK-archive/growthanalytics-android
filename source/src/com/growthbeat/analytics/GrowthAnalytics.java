@@ -109,6 +109,10 @@ public class GrowthAnalytics {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
 
+				for (EventHandler eventHandler : eventHandlers) {
+					eventHandler.callback(eventId, processedProperties);
+				}
+
 			}
 		}).start();
 
