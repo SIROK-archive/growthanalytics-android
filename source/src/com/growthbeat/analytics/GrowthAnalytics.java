@@ -1,7 +1,9 @@
 package com.growthbeat.analytics;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -35,6 +37,7 @@ public class GrowthAnalytics {
 	private String credentialId = null;
 
 	private Date openDate = null;
+	private List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 
 	private GrowthAnalytics() {
 		super();
@@ -109,6 +112,10 @@ public class GrowthAnalytics {
 			}
 		}).start();
 
+	}
+
+	public void addEventHandler(EventHandler eventHandler) {
+		eventHandlers.add(eventHandler);
 	}
 
 	public void tag(final String tagId) {
