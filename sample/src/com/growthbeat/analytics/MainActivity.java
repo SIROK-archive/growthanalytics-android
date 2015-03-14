@@ -1,5 +1,6 @@
 package com.growthbeat.analytics;
 
+import java.util.Map;
 import java.util.UUID;
 
 import android.app.Activity;
@@ -22,6 +23,12 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		GrowthAnalytics.getInstance().initialize(getApplicationContext(), "OyVa3zboPjHVjsDC", "3EKydeJ0imxJ5WqS22FJfdVamFLgu7XA");
+
+		GrowthAnalytics.getInstance().addEventHandler(new EventHandler() {
+			void callback(String eventId, Map<String, String> properties) {
+				System.out.println(String.format("EventHandler called. (eventId: %s, properties: %s)", eventId, properties));
+			}
+		});
 
 		sharedPreferences = getSharedPreferences("GrowthAnalyticsSample", Context.MODE_PRIVATE);
 
