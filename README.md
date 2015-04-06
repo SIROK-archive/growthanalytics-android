@@ -17,14 +17,13 @@
 1. Write following code in MainActivity's onStart
 
 	```java
-	GrowthAnalytics.getInstance().start();
-	GrowthAnalytics.getInstance().setBasicTags();
+	GrowthAnalytics.getInstance().open();
 	```
 
 1. Write following code in MainActivity's onStop
 
 	```java
-	GrowthAnalytics.getInstance().stop();
+	GrowthAnalytics.getInstance().close();
 	```
 
 ## Growthbeat Full SDK
