@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
@@ -71,13 +72,14 @@ public class GrowthAnalytics {
 
 	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
 
+		final Handler handler = new Handler();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
 				logger.info(String.format("Track event... (eventId: %s)", eventId));
 
-				Map<String, String> processedProperties = (properties != null) ? properties : new HashMap<String, String>();
+				final Map<String, String> processedProperties = (properties != null) ? properties : new HashMap<String, String>();
 
 				ClientEvent existingClientEvent = ClientEvent.load(eventId);
 
@@ -109,9 +111,14 @@ public class GrowthAnalytics {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
 
-				for (EventHandler eventHandler : eventHandlers) {
-					eventHandler.callback(eventId, processedProperties);
-				}
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						for (EventHandler eventHandler : eventHandlers) {
+							eventHandler.callback(eventId, processedProperties);
+						}
+					}
+				});
 
 			}
 		}).start();
