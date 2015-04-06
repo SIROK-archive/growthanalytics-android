@@ -55,6 +55,8 @@ public class GrowthAnalytics {
 		this.credentialId = credentialId;
 		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
 
+		setBasicTags();
+
 	}
 
 	public void track(final String eventId) {
@@ -256,6 +258,7 @@ public class GrowthAnalytics {
 		setTimeZone();
 		setTimeZoneOffset();
 		setAppVersion();
+		setAdvertisingId();
 	}
 
 	public String getApplicationId() {
