@@ -55,6 +55,11 @@ public class GrowthAnalytics {
 			return;
 		initialized = true;
 
+		if (context == null) {
+			logger.warning("The context parameter cannot be null.");
+			return;
+		}
+
 		this.applicationId = applicationId;
 		this.credentialId = credentialId;
 
