@@ -41,7 +41,10 @@ public class ClientTag extends Model {
 			params.put("value", value);
 		if (credentialId != null)
 			params.put("credentialId", credentialId);
+
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_tags", params);
+		if (jsonObject == null)
+			return null;
 
 		return new ClientTag(jsonObject);
 
@@ -97,10 +100,14 @@ public class ClientTag extends Model {
 
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("clientId", clientId);
-			jsonObject.put("tagId", tagId);
-			jsonObject.put("value", value);
-			jsonObject.put("created", DateUtils.formatToDateTimeString(created));
+			if (clientId != null)
+				jsonObject.put("clientId", clientId);
+			if (tagId != null)
+				jsonObject.put("tagId", tagId);
+			if (value != null)
+				jsonObject.put("value", value);
+			if (created != null)
+				jsonObject.put("created", DateUtils.formatToDateTimeString(created));
 		} catch (JSONException e) {
 			return null;
 		}

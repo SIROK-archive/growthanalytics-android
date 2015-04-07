@@ -37,6 +37,7 @@ public class GrowthAnalytics {
 	private String applicationId = null;
 	private String credentialId = null;
 
+	private boolean initialized = false;
 	private Date openDate = null;
 	private List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 
@@ -50,10 +51,19 @@ public class GrowthAnalytics {
 
 	public void initialize(final Context context, final String applicationId, final String credentialId) {
 
-		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
+		if (initialized)
+			return;
+		initialized = true;
+
+		if (context == null) {
+			logger.warning("The context parameter cannot be null.");
+			return;
+		}
 
 		this.applicationId = applicationId;
 		this.credentialId = credentialId;
+
+		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
 		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
 
 		setBasicTags();
@@ -106,9 +116,13 @@ public class GrowthAnalytics {
 				try {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
 							processedProperties, credentialId);
-					ClientEvent.save(createdClientEvent);
-					logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)", createdClientEvent.getId(),
-							eventId, processedProperties));
+					if (createdClientEvent != null) {
+						ClientEvent.save(createdClientEvent);
+						logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)",
+								createdClientEvent.getId(), eventId, processedProperties));
+					} else {
+						logger.warning("Created client_event is null.");
+					}
 				} catch (GrowthbeatException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
@@ -156,8 +170,12 @@ public class GrowthAnalytics {
 				try {
 					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
 							credentialId);
-					ClientTag.save(createdClientTag);
-					logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
+					if (createdClientTag != null) {
+						ClientTag.save(createdClientTag);
+						logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
+					} else {
+						logger.warning("Created client_tag is null.");
+					}
 				} catch (GrowthbeatException e) {
 					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
