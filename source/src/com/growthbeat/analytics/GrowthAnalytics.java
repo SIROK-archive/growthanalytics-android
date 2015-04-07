@@ -37,6 +37,7 @@ public class GrowthAnalytics {
 	private String applicationId = null;
 	private String credentialId = null;
 
+	private boolean initialized = false;
 	private Date openDate = null;
 	private List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 
@@ -50,10 +51,14 @@ public class GrowthAnalytics {
 
 	public void initialize(final Context context, final String applicationId, final String credentialId) {
 
-		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
+		if (initialized)
+			return;
+		initialized = true;
 
 		this.applicationId = applicationId;
 		this.credentialId = credentialId;
+
+		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
 		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
 
 		setBasicTags();
