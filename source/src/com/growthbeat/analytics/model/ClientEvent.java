@@ -47,6 +47,8 @@ public class ClientEvent extends Model {
 			params.put("credentialId", credentialId);
 
 		JSONObject jsonObject = GrowthAnalytics.getInstance().getHttpClient().post("1/client_events", params);
+		if (jsonObject == null)
+			return null;
 
 		return new ClientEvent(jsonObject);
 
@@ -110,14 +112,20 @@ public class ClientEvent extends Model {
 
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("id", getId());
-			jsonObject.put("clientId", clientId);
-			jsonObject.put("eventId", eventId);
-			JSONObject propertiesJsonObject = new JSONObject();
-			for (Map.Entry<String, String> entry : properties.entrySet())
-				propertiesJsonObject.put(entry.getKey(), entry.getValue());
-			jsonObject.put("properties", propertiesJsonObject);
-			jsonObject.put("created", DateUtils.formatToDateTimeString(created));
+			if (id != null)
+				jsonObject.put("id", id);
+			if (clientId != null)
+				jsonObject.put("clientId", clientId);
+			if (eventId != null)
+				jsonObject.put("eventId", eventId);
+			if (properties != null) {
+				JSONObject propertiesJsonObject = new JSONObject();
+				for (Map.Entry<String, String> entry : properties.entrySet())
+					propertiesJsonObject.put(entry.getKey(), entry.getValue());
+				jsonObject.put("properties", propertiesJsonObject);
+			}
+			if (created != null)
+				jsonObject.put("created", DateUtils.formatToDateTimeString(created));
 		} catch (JSONException e) {
 			return null;
 		}
