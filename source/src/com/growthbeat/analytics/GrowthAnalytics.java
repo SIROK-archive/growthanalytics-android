@@ -116,9 +116,13 @@ public class GrowthAnalytics {
 				try {
 					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
 							processedProperties, credentialId);
-					ClientEvent.save(createdClientEvent);
-					logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)", createdClientEvent.getId(),
-							eventId, processedProperties));
+					if (createdClientEvent != null) {
+						ClientEvent.save(createdClientEvent);
+						logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)",
+								createdClientEvent.getId(), eventId, processedProperties));
+					} else {
+						logger.warning("Created client_event is null.");
+					}
 				} catch (GrowthbeatException e) {
 					logger.info(String.format("Tracking event fail. %s", e.getMessage()));
 				}
@@ -166,8 +170,12 @@ public class GrowthAnalytics {
 				try {
 					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
 							credentialId);
-					ClientTag.save(createdClientTag);
-					logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
+					if (createdClientTag != null) {
+						ClientTag.save(createdClientTag);
+						logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
+					} else {
+						logger.warning("Created client_tag is null.");
+					}
 				} catch (GrowthbeatException e) {
 					logger.info(String.format("Setting tag fail. %s", e.getMessage()));
 				}
