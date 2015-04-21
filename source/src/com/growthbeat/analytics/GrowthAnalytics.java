@@ -142,7 +142,7 @@ public class GrowthAnalytics {
 	}
 
 	public void trackCustom(final String lastId, final Map<String, String> properties, final TrackOption option) {
-		track(String.format("Event:%s:Custom:%s", applicationId, lastId), properties, option);
+		track(generateCustomEventId(lastId), properties, option);
 	}
 
 	public void addEventHandler(EventHandler eventHandler) {
@@ -190,7 +190,7 @@ public class GrowthAnalytics {
 	}
 
 	public void tagCustom(String lastId, String value) {
-		tag(String.format("Tag:%s:Custom:%s", applicationId, lastId), value);
+		tag(generateCustomTagId(lastId), value);
 	}
 
 	public void open() {
@@ -318,8 +318,16 @@ public class GrowthAnalytics {
 		return String.format("Event:%s:Default:%s", applicationId, name);
 	}
 
+	private String generateCustomEventId(String lastId) {
+		return String.format("Event:%s:Custom:%s", applicationId, lastId);
+	}
+
 	private String generateTagId(String name) {
 		return String.format("Tag:%s:Default:%s", applicationId, name);
+	}
+
+	private String generateCustomTagId(String lastId) {
+		return String.format("Tag:%s:Custom:%s", applicationId, lastId);
 	}
 
 	public static enum TrackOption {
