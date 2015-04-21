@@ -33,13 +33,15 @@ public class ClientEvent extends Model {
 		setJsonObject(jsonObject);
 	}
 
-	public static ClientEvent create(String clientId, String eventId, Map<String, String> properties, String credentialId) {
+	public static ClientEvent create(String clientId, String eventId, String name, Map<String, String> properties, String credentialId) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		if (clientId != null)
 			params.put("clientId", clientId);
 		if (eventId != null)
 			params.put("eventId", eventId);
+		if (name != null)
+			params.put("name", "name");
 		if (properties != null)
 			for (Map.Entry<String, String> entry : properties.entrySet())
 				params.put(String.format("properties[%s]", entry.getKey()), entry.getValue());
