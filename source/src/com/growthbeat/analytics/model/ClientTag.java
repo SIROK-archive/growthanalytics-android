@@ -30,15 +30,13 @@ public class ClientTag extends Model {
 		setJsonObject(jsonObject);
 	}
 
-	public static ClientTag create(String clientId, String tagId, String name, String value, String credentialId) {
+	public static ClientTag create(String clientId, String tagId, String value, String credentialId) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		if (clientId != null)
 			params.put("clientId", clientId);
 		if (tagId != null)
 			params.put("tagId", tagId);
-		if (name != null)
-			params.put("name", name);
 		if (value != null)
 			params.put("value", value);
 		if (credentialId != null)

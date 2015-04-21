@@ -70,19 +70,19 @@ public class GrowthAnalytics {
 
 	}
 
-	public void track(final String eventId, final String name) {
-		track(eventId, name, null, null);
+	public void track(final String eventId) {
+		track(eventId, null, null);
 	}
 
-	public void track(final String eventId, final String name, final Map<String, String> properties) {
-		track(eventId, name, properties, null);
+	public void track(final String eventId, final Map<String, String> properties) {
+		track(eventId, properties, null);
 	}
 
-	public void track(final String eventId, final String name, final TrackOption option) {
-		track(eventId, name, null, option);
+	public void track(final String eventId, final TrackOption option) {
+		track(eventId, null, option);
 	}
 
-	public void track(final String eventId, final String name, final Map<String, String> properties, final TrackOption option) {
+	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
 
 		final Handler handler = new Handler();
 		new Thread(new Runnable() {
@@ -114,7 +114,7 @@ public class GrowthAnalytics {
 				}
 
 				try {
-					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId, name,
+					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
 							processedProperties, credentialId);
 					if (createdClientEvent != null) {
 						ClientEvent.save(createdClientEvent);
@@ -141,19 +141,19 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackCustom(final String id, final String name, final Map<String, String> properties, final TrackOption option) {
-		track(String.format("Event:%s:Custom:%s", applicationId, id), name, properties, option);
+	public void trackCustom(final String id, final Map<String, String> properties, final TrackOption option) {
+		track(String.format("Event:%s:Custom:%s", applicationId, id), properties, option);
 	}
 
 	public void addEventHandler(EventHandler eventHandler) {
 		eventHandlers.add(eventHandler);
 	}
 
-	public void tag(final String tagId, final String name) {
-		tag(tagId, name, null);
+	public void tag(final String tagId) {
+		tag(tagId, null);
 	}
 
-	public void tag(final String tagId, final String name, final String value) {
+	public void tag(final String tagId, final String value) {
 
 		new Thread(new Runnable() {
 			@Override
@@ -172,7 +172,7 @@ public class GrowthAnalytics {
 				}
 
 				try {
-					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, name, value,
+					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
 							credentialId);
 					if (createdClientTag != null) {
 						ClientTag.save(createdClientTag);
@@ -189,8 +189,8 @@ public class GrowthAnalytics {
 
 	}
 
-	public void tagCustom(String id, String name, String value) {
-		tag(String.format("Tag:%s:Custom:%s", applicationId, id), name, value);
+	public void tagCustom(String id, String value) {
+		tag(String.format("Tag:%s:Custom:%s", applicationId, id), value);
 	}
 
 	public void open() {
@@ -206,7 +206,7 @@ public class GrowthAnalytics {
 		openDate = null;
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("time", String.valueOf(time));
-		track(generateEventId("Close"), null, properties);
+		track(generateEventId("Close"), properties);
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -214,7 +214,7 @@ public class GrowthAnalytics {
 		properties.put("price", String.valueOf(price));
 		properties.put("category", category);
 		properties.put("product", product);
-		track(generateEventId("Purchase"), null, properties);
+		track(generateEventId("Purchase"), properties);
 	}
 
 	public void setUserId(String userId) {
@@ -222,7 +222,7 @@ public class GrowthAnalytics {
 	}
 
 	public void setName(String name) {
-		tag(generateTagId("Name"), name);
+		tag(generateTagId("Name"));
 	}
 
 	public void setAge(int age) {
