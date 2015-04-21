@@ -141,8 +141,8 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackCustom(final String id, final Map<String, String> properties, final TrackOption option) {
-		track(String.format("Event:%s:Custom:%s", applicationId, id), properties, option);
+	public void trackCustom(final String lastId, final Map<String, String> properties, final TrackOption option) {
+		track(String.format("Event:%s:Custom:%s", applicationId, lastId), properties, option);
 	}
 
 	public void addEventHandler(EventHandler eventHandler) {
@@ -189,8 +189,8 @@ public class GrowthAnalytics {
 
 	}
 
-	public void tagCustom(String id, String value) {
-		tag(String.format("Tag:%s:Custom:%s", applicationId, id), value);
+	public void tagCustom(String lastId, String value) {
+		tag(String.format("Tag:%s:Custom:%s", applicationId, lastId), value);
 	}
 
 	public void open() {
