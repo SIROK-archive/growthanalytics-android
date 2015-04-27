@@ -195,8 +195,8 @@ public class GrowthAnalytics {
 
 	public void open() {
 		openDate = new Date();
-		track(generateEventId("Open"), null, TrackOption.COUNTER);
-		track(generateEventId("Install"), null, TrackOption.ONCE);
+		track(generateEventId("Open"), TrackOption.COUNTER);
+		track(generateEventId("Install"), TrackOption.ONCE);
 	}
 
 	public void close() {
