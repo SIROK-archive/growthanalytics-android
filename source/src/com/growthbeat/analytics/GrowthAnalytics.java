@@ -141,6 +141,18 @@ public class GrowthAnalytics {
 
 	}
 
+	public void trackCustom(final String lastId) {
+		track(generateCustomEventId(lastId));
+	}
+
+	public void trackCustom(final String lastId, final Map<String, String> properties) {
+		track(generateCustomEventId(lastId), properties);
+	}
+
+	public void trackCustom(final String lastId, final TrackOption option) {
+		track(generateCustomEventId(lastId), option);
+	}
+
 	public void trackCustom(final String lastId, final Map<String, String> properties, final TrackOption option) {
 		track(generateCustomEventId(lastId), properties, option);
 	}
@@ -187,6 +199,10 @@ public class GrowthAnalytics {
 			}
 		}).start();
 
+	}
+
+	public void tagCustom(String lastId) {
+		tag(generateCustomTagId(lastId));
 	}
 
 	public void tagCustom(String lastId, String value) {
