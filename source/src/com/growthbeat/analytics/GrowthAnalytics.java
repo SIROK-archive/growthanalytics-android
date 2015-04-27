@@ -222,7 +222,7 @@ public class GrowthAnalytics {
 	}
 
 	public void setName(String name) {
-		tag(generateTagId("Name"));
+		tag(generateTagId("Name"), name);
 	}
 
 	public void setAge(int age) {
