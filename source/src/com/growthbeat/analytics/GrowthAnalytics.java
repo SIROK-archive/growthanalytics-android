@@ -29,6 +29,9 @@ public class GrowthAnalytics {
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
+	private static final String DEFAULT = "Default";
+	private static final String CUSTOM = "Custom";
+
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
@@ -70,34 +73,36 @@ public class GrowthAnalytics {
 
 	}
 
-	public void track(final String eventId) {
-		track(eventId, null, null);
+	public void track(final String namespace, final String eventId) {
+		track(namespace, eventId, null, null);
 	}
 
-	public void track(final String eventId, final Map<String, String> properties) {
-		track(eventId, properties, null);
+	public void track(final String namespace, final String eventId, final Map<String, String> properties) {
+		track(namespace, eventId, properties, null);
 	}
 
-	public void track(final String eventId, final TrackOption option) {
-		track(eventId, null, option);
+	public void track(final String namespace, final String eventId, final TrackOption option) {
+		track(namespace, eventId, null, option);
 	}
 
-	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
+	public void track(final String namespace, final String eventId, final Map<String, String> properties, final TrackOption option) {
+
+		final String fullId = generateEventId(namespace, eventId);
 
 		final Handler handler = new Handler();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
-				logger.info(String.format("Track event... (eventId: %s)", eventId));
+				logger.info(String.format("Track event... (eventId: %s)", fullId));
 
 				final Map<String, String> processedProperties = (properties != null) ? properties : new HashMap<String, String>();
 
-				ClientEvent existingClientEvent = ClientEvent.load(eventId);
+				ClientEvent existingClientEvent = ClientEvent.load(fullId);
 
 				if (option == TrackOption.ONCE) {
 					if (existingClientEvent != null) {
-						logger.info(String.format("Event already sent with once option. (eventId: %s)", eventId));
+						logger.info(String.format("Event already sent with once option. (eventId: %s)", fullId));
 						return;
 					}
 				}
@@ -114,12 +119,12 @@ public class GrowthAnalytics {
 				}
 
 				try {
-					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), eventId,
+					ClientEvent createdClientEvent = ClientEvent.create(GrowthbeatCore.getInstance().waitClient().getId(), fullId,
 							processedProperties, credentialId);
 					if (createdClientEvent != null) {
 						ClientEvent.save(createdClientEvent);
 						logger.info(String.format("Tracking event success. (id: %s, eventId: %s, properties: %s)",
-								createdClientEvent.getId(), eventId, processedProperties));
+								createdClientEvent.getId(), fullId, processedProperties));
 					} else {
 						logger.warning("Created client_event is null.");
 					}
@@ -131,7 +136,7 @@ public class GrowthAnalytics {
 					@Override
 					public void run() {
 						for (EventHandler eventHandler : eventHandlers) {
-							eventHandler.callback(eventId, processedProperties);
+							eventHandler.callback(fullId, processedProperties);
 						}
 					}
 				});
@@ -141,54 +146,55 @@ public class GrowthAnalytics {
 
 	}
 
-	public void trackCustom(final String lastId) {
-		track(generateCustomEventId(lastId));
+	public void track(final String lastId) {
+		track(CUSTOM, lastId);
 	}
 
-	public void trackCustom(final String lastId, final Map<String, String> properties) {
-		track(generateCustomEventId(lastId), properties);
+	public void track(final String lastId, final Map<String, String> properties) {
+		track(CUSTOM, lastId, properties);
 	}
 
-	public void trackCustom(final String lastId, final TrackOption option) {
-		track(generateCustomEventId(lastId), option);
+	public void track(final String lastId, final TrackOption option) {
+		track(CUSTOM, lastId, option);
 	}
 
-	public void trackCustom(final String lastId, final Map<String, String> properties, final TrackOption option) {
-		track(generateCustomEventId(lastId), properties, option);
+	public void track(final String lastId, final Map<String, String> properties, final TrackOption option) {
+		track(CUSTOM, lastId, properties, option);
 	}
 
 	public void addEventHandler(EventHandler eventHandler) {
 		eventHandlers.add(eventHandler);
 	}
 
-	public void tag(final String tagId) {
-		tag(tagId, null);
+	public void tag(final String namespace, final String tagId) {
+		tag(namespace, tagId, null);
 	}
 
-	public void tag(final String tagId, final String value) {
+	public void tag(final String namespace, final String tagId, final String value) {
 
+		final String fullId = generateTagId(namespace, tagId);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 
-				logger.info(String.format("Set tag... (tagId: %s, value: %s)", tagId, value));
+				logger.info(String.format("Set tag... (tagId: %s, value: %s)", fullId, value));
 
-				ClientTag existingClientTag = ClientTag.load(tagId);
+				ClientTag existingClientTag = ClientTag.load(fullId);
 
 				if (existingClientTag != null) {
 					if (value == existingClientTag.getValue() || (value != null && value.equals(existingClientTag.getValue()))) {
-						logger.info(String.format("Tag exists with the same value. (tagId: %s, value: %s)", tagId, value));
+						logger.info(String.format("Tag exists with the same value. (tagId: %s, value: %s)", fullId, value));
 						return;
 					}
-					logger.info(String.format("Tag exists with the other value. (tagId: %s, value: %s)", tagId, value));
+					logger.info(String.format("Tag exists with the other value. (tagId: %s, value: %s)", fullId, value));
 				}
 
 				try {
-					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), tagId, value,
+					ClientTag createdClientTag = ClientTag.create(GrowthbeatCore.getInstance().waitClient().getId(), fullId, value,
 							credentialId);
 					if (createdClientTag != null) {
 						ClientTag.save(createdClientTag);
-						logger.info(String.format("Setting tag success. (tagId: %s)", tagId));
+						logger.info(String.format("Setting tag success. (tagId: %s)", fullId));
 					} else {
 						logger.warning("Created client_tag is null.");
 					}
@@ -201,18 +207,18 @@ public class GrowthAnalytics {
 
 	}
 
-	public void tagCustom(String lastId) {
-		tag(generateCustomTagId(lastId));
+	public void tag(String lastId) {
+		tag(CUSTOM, lastId);
 	}
 
-	public void tagCustom(String lastId, String value) {
-		tag(generateCustomTagId(lastId), value);
+	public void tag(String lastId, String value) {
+		tag(CUSTOM, lastId, value);
 	}
 
 	public void open() {
 		openDate = new Date();
-		track(generateEventId("Open"), TrackOption.COUNTER);
-		track(generateEventId("Install"), TrackOption.ONCE);
+		track(DEFAULT, "Open", TrackOption.COUNTER);
+		track(DEFAULT, "Install", TrackOption.ONCE);
 	}
 
 	public void close() {
@@ -222,7 +228,7 @@ public class GrowthAnalytics {
 		openDate = null;
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("time", String.valueOf(time));
-		track(generateEventId("Close"), properties);
+		track(DEFAULT, "Close", properties);
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -230,59 +236,59 @@ public class GrowthAnalytics {
 		properties.put("price", String.valueOf(price));
 		properties.put("category", category);
 		properties.put("product", product);
-		track(generateEventId("Purchase"), properties);
+		track(DEFAULT, "Purchase", properties);
 	}
 
 	public void setUserId(String userId) {
-		tag(generateTagId("UserID"), userId);
+		tag(DEFAULT, "UserID", userId);
 	}
 
 	public void setName(String name) {
-		tag(generateTagId("Name"), name);
+		tag(DEFAULT, "Name", name);
 	}
 
 	public void setAge(int age) {
-		tag(generateTagId("Age"), String.valueOf(age));
+		tag(DEFAULT, "Age", String.valueOf(age));
 	}
 
 	public void setGender(Gender gender) {
-		tag(generateTagId("Gender"), gender.getValue());
+		tag(DEFAULT, "Gender", gender.getValue());
 	}
 
 	public void setLevel(int level) {
-		tag(generateTagId("Level"), String.valueOf(level));
+		tag(DEFAULT, "Level", String.valueOf(level));
 	}
 
 	public void setDevelopment(boolean development) {
-		tag(generateTagId("Development"), String.valueOf(development));
+		tag(DEFAULT, "Development", String.valueOf(development));
 	}
 
 	public void setDeviceModel() {
-		tag(generateTagId("DeviceModel"), DeviceUtils.getModel());
+		tag(DEFAULT, "DeviceModel", DeviceUtils.getModel());
 	}
 
 	public void setOS() {
-		tag(generateTagId("OS"), "Android " + DeviceUtils.getOsVersion());
+		tag(DEFAULT, "OS", "Android " + DeviceUtils.getOsVersion());
 	}
 
 	public void setLanguage() {
-		tag(generateTagId("Language"), DeviceUtils.getLanguage());
+		tag(DEFAULT, "Language", DeviceUtils.getLanguage());
 	}
 
 	public void setTimeZone() {
-		tag(generateTagId("TimeZone"), DeviceUtils.getTimeZone());
+		tag(DEFAULT, "TimeZone", DeviceUtils.getTimeZone());
 	}
 
 	public void setTimeZoneOffset() {
-		tag(generateTagId("TimeZoneOffset"), String.valueOf(DeviceUtils.getTimeZoneOffset()));
+		tag(DEFAULT, "TimeZoneOffset", String.valueOf(DeviceUtils.getTimeZoneOffset()));
 	}
 
 	public void setAppVersion() {
-		tag(generateTagId("AppVersion"), AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
+		tag(DEFAULT, "AppVersion", AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
 	}
 
 	public void setRandom() {
-		tag(generateTagId("Random"), String.valueOf(new Random().nextDouble()));
+		tag(DEFAULT, "Random", String.valueOf(new Random().nextDouble()));
 	}
 
 	public void setAdvertisingId() {
@@ -293,7 +299,7 @@ public class GrowthAnalytics {
 					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(GrowthbeatCore.getInstance().getContext());
 					if (adInfo.getId() == null || !adInfo.isLimitAdTrackingEnabled())
 						return;
-					tag(generateTagId("AdvertisingID"), adInfo.getId());
+					tag(DEFAULT, "AdvertisingID", adInfo.getId());
 				} catch (Exception e) {
 				}
 			}
@@ -330,20 +336,12 @@ public class GrowthAnalytics {
 		return preference;
 	}
 
-	private String generateEventId(String name) {
-		return String.format("Event:%s:Default:%s", applicationId, name);
+	private String generateEventId(String namespace, String name) {
+		return String.format("Event:%s:%s:%s", namespace, applicationId, name);
 	}
 
-	private String generateCustomEventId(String lastId) {
-		return String.format("Event:%s:Custom:%s", applicationId, lastId);
-	}
-
-	private String generateTagId(String name) {
-		return String.format("Tag:%s:Default:%s", applicationId, name);
-	}
-
-	private String generateCustomTagId(String lastId) {
-		return String.format("Tag:%s:Custom:%s", applicationId, lastId);
+	private String generateTagId(final String namespace, String name) {
+		return String.format("Tag:%s:%s:%s", namespace, applicationId, name);
 	}
 
 	public static enum TrackOption {
