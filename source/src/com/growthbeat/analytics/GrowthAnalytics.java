@@ -166,10 +166,6 @@ public class GrowthAnalytics {
 		eventHandlers.add(eventHandler);
 	}
 
-	public void tag(final String namespace, final String tagId) {
-		tag(namespace, tagId, null);
-	}
-
 	public void tag(final String namespace, final String tagId, final String value) {
 
 		final String fullId = generateTagId(namespace, tagId);
