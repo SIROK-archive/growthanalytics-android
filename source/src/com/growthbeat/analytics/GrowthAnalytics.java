@@ -294,6 +294,21 @@ public class GrowthAnalytics {
 						return;
 					tag(DEFAULT_NAMESPACE, "AdvertisingID", adInfo.getId());
 				} catch (Exception e) {
+					logger.warning("Failed to get advertising info: " + e.getMessage());
+				}
+			}
+		}).start();
+	}
+
+	public void setTrackingEnabled() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(GrowthbeatCore.getInstance().getContext());
+					tag(DEFAULT_NAMESPACE, "TrackingEnabled", String.valueOf(adInfo.isLimitAdTrackingEnabled()));
+				} catch (Exception e) {
+					logger.warning("Failed to get advertising info: " + e.getMessage());
 				}
 			}
 		}).start();
@@ -307,6 +322,7 @@ public class GrowthAnalytics {
 		setTimeZoneOffset();
 		setAppVersion();
 		setAdvertisingId();
+		setTrackingEnabled();
 	}
 
 	public String getApplicationId() {
