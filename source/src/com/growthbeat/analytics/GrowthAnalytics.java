@@ -27,6 +27,8 @@ public class GrowthAnalytics {
 
 	public static final String LOGGER_DEFAULT_TAG = "GrowthAnalytics";
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
+	private static final int HTTP_CLIENT_DEFAULT_CONNECTION_TIMEOUT = 60 * 1000;
+	private static final int HTTP_CLIENT_DEFAULT_SOCKET_TIMEOUT = 60 * 1000;
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
 	private static final String DEFAULT_NAMESPACE = "Default";
@@ -34,7 +36,8 @@ public class GrowthAnalytics {
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
-	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
+	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL,
+			HTTP_CLIENT_DEFAULT_CONNECTION_TIMEOUT, HTTP_CLIENT_DEFAULT_SOCKET_TIMEOUT);
 	private final Preference preference = new Preference(PREFERENCE_DEFAULT_FILE_NAME);
 
 	private String applicationId = null;
