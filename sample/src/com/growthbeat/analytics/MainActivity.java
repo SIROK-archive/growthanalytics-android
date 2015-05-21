@@ -1,5 +1,6 @@
 package com.growthbeat.analytics;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,6 +32,8 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		GrowthAnalytics.getInstance().track("Initialize");
+
 		sharedPreferences = getSharedPreferences("GrowthAnalyticsSample", Context.MODE_PRIVATE);
 
 		findViewById(R.id.tag).setOnClickListener(new OnClickListener() {
@@ -56,6 +59,8 @@ public class MainActivity extends Activity {
 		GrowthAnalytics.getInstance().setUserId(userId);
 
 		GrowthAnalytics.getInstance().setRandom();
+
+		GrowthAnalytics.getInstance().tag("LastOpen", String.valueOf(new Date().getTime()));
 
 	}
 

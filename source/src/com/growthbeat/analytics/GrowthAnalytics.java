@@ -29,6 +29,9 @@ public class GrowthAnalytics {
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
+	private static final String DEFAULT_NAMESPACE = "Default";
+	private static final String CUSTOM_NAMESPACE = "Custom";
+
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
 	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
@@ -70,19 +73,25 @@ public class GrowthAnalytics {
 
 	}
 
-	public void track(final String eventId) {
-		track(eventId, null, null);
+	public void track(String name) {
+		track(CUSTOM_NAMESPACE, name, null, null);
 	}
 
-	public void track(final String eventId, final Map<String, String> properties) {
-		track(eventId, properties, null);
+	public void track(String name, Map<String, String> properties) {
+		track(CUSTOM_NAMESPACE, name, properties, null);
 	}
 
-	public void track(final String eventId, final TrackOption option) {
-		track(eventId, null, option);
+	public void track(String name, TrackOption option) {
+		track(CUSTOM_NAMESPACE, name, null, option);
 	}
 
-	public void track(final String eventId, final Map<String, String> properties, final TrackOption option) {
+	public void track(String name, Map<String, String> properties, TrackOption option) {
+		track(CUSTOM_NAMESPACE, name, properties, option);
+	}
+
+	public void track(final String namespace, final String name, final Map<String, String> properties, final TrackOption option) {
+
+		final String eventId = generateEventId(namespace, name);
 
 		final Handler handler = new Handler();
 		new Thread(new Runnable() {
@@ -145,12 +154,17 @@ public class GrowthAnalytics {
 		eventHandlers.add(eventHandler);
 	}
 
-	public void tag(final String tagId) {
-		tag(tagId, null);
+	public void tag(String name) {
+		tag(CUSTOM_NAMESPACE, name, null);
 	}
 
-	public void tag(final String tagId, final String value) {
+	public void tag(String name, String value) {
+		tag(CUSTOM_NAMESPACE, name, value);
+	}
 
+	public void tag(final String namespace, final String name, final String value) {
+
+		final String tagId = generateTagId(namespace, name);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -187,8 +201,8 @@ public class GrowthAnalytics {
 
 	public void open() {
 		openDate = new Date();
-		track(generateEventId("Open"), TrackOption.COUNTER);
-		track(generateEventId("Install"), TrackOption.ONCE);
+		track(DEFAULT_NAMESPACE, "Open", null, TrackOption.COUNTER);
+		track(DEFAULT_NAMESPACE, "Install", null, TrackOption.ONCE);
 	}
 
 	public void close() {
@@ -198,7 +212,7 @@ public class GrowthAnalytics {
 		openDate = null;
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("time", String.valueOf(time));
-		track(generateEventId("Close"), properties);
+		track(DEFAULT_NAMESPACE, "Close", properties, null);
 	}
 
 	public void purchase(int price, String category, String product) {
@@ -206,59 +220,59 @@ public class GrowthAnalytics {
 		properties.put("price", String.valueOf(price));
 		properties.put("category", category);
 		properties.put("product", product);
-		track(generateEventId("Purchase"), properties);
+		track(DEFAULT_NAMESPACE, "Purchase", properties, null);
 	}
 
 	public void setUserId(String userId) {
-		tag(generateTagId("UserID"), userId);
+		tag(DEFAULT_NAMESPACE, "UserID", userId);
 	}
 
 	public void setName(String name) {
-		tag(generateTagId("Name"), name);
+		tag(DEFAULT_NAMESPACE, "Name", name);
 	}
 
 	public void setAge(int age) {
-		tag(generateTagId("Age"), String.valueOf(age));
+		tag(DEFAULT_NAMESPACE, "Age", String.valueOf(age));
 	}
 
 	public void setGender(Gender gender) {
-		tag(generateTagId("Gender"), gender.getValue());
+		tag(DEFAULT_NAMESPACE, "Gender", gender.getValue());
 	}
 
 	public void setLevel(int level) {
-		tag(generateTagId("Level"), String.valueOf(level));
+		tag(DEFAULT_NAMESPACE, "Level", String.valueOf(level));
 	}
 
 	public void setDevelopment(boolean development) {
-		tag(generateTagId("Development"), String.valueOf(development));
+		tag(DEFAULT_NAMESPACE, "Development", String.valueOf(development));
 	}
 
 	public void setDeviceModel() {
-		tag(generateTagId("DeviceModel"), DeviceUtils.getModel());
+		tag(DEFAULT_NAMESPACE, "DeviceModel", DeviceUtils.getModel());
 	}
 
 	public void setOS() {
-		tag(generateTagId("OS"), "Android " + DeviceUtils.getOsVersion());
+		tag(DEFAULT_NAMESPACE, "OS", "Android " + DeviceUtils.getOsVersion());
 	}
 
 	public void setLanguage() {
-		tag(generateTagId("Language"), DeviceUtils.getLanguage());
+		tag(DEFAULT_NAMESPACE, "Language", DeviceUtils.getLanguage());
 	}
 
 	public void setTimeZone() {
-		tag(generateTagId("TimeZone"), DeviceUtils.getTimeZone());
+		tag(DEFAULT_NAMESPACE, "TimeZone", DeviceUtils.getTimeZone());
 	}
 
 	public void setTimeZoneOffset() {
-		tag(generateTagId("TimeZoneOffset"), String.valueOf(DeviceUtils.getTimeZoneOffset()));
+		tag(DEFAULT_NAMESPACE, "TimeZoneOffset", String.valueOf(DeviceUtils.getTimeZoneOffset()));
 	}
 
 	public void setAppVersion() {
-		tag(generateTagId("AppVersion"), AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
+		tag(DEFAULT_NAMESPACE, "AppVersion", AppUtils.getaAppVersion(GrowthbeatCore.getInstance().getContext()));
 	}
 
 	public void setRandom() {
-		tag(generateTagId("Random"), String.valueOf(new Random().nextDouble()));
+		tag(DEFAULT_NAMESPACE, "Random", String.valueOf(new Random().nextDouble()));
 	}
 
 	public void setAdvertisingId() {
@@ -269,7 +283,7 @@ public class GrowthAnalytics {
 					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(GrowthbeatCore.getInstance().getContext());
 					if (adInfo.getId() == null || !adInfo.isLimitAdTrackingEnabled())
 						return;
-					tag(generateTagId("AdvertisingID"), adInfo.getId());
+					tag(DEFAULT_NAMESPACE, "AdvertisingID", adInfo.getId());
 				} catch (Exception e) {
 				}
 			}
@@ -306,12 +320,12 @@ public class GrowthAnalytics {
 		return preference;
 	}
 
-	private String generateEventId(String name) {
-		return String.format("Event:%s:Default:%s", applicationId, name);
+	private String generateEventId(String namespace, String name) {
+		return String.format("Event:%s:%s:%s", applicationId, namespace, name);
 	}
 
-	private String generateTagId(String name) {
-		return String.format("Tag:%s:Default:%s", applicationId, name);
+	private String generateTagId(final String namespace, String name) {
+		return String.format("Tag:%s:%s:%s", applicationId, namespace, name);
 	}
 
 	public static enum TrackOption {
