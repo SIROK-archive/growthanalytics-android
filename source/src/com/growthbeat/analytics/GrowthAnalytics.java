@@ -72,6 +72,12 @@ public class GrowthAnalytics {
 		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
 		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
 
+		if (GrowthbeatCore.getInstance().getClient() == null
+				|| (GrowthbeatCore.getInstance().getClient().getApplication() != null && !GrowthbeatCore.getInstance().getClient()
+						.getApplication().getId().equals(applicationId))) {
+			preference.removeAll();
+		}
+
 		setBasicTags();
 
 	}
