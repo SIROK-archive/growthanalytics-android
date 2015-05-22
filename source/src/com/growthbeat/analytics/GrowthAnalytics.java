@@ -27,6 +27,8 @@ public class GrowthAnalytics {
 
 	public static final String LOGGER_DEFAULT_TAG = "GrowthAnalytics";
 	public static final String HTTP_CLIENT_DEFAULT_BASE_URL = "https://api.analytics.growthbeat.com/";
+	private static final int HTTP_CLIENT_DEFAULT_CONNECTION_TIMEOUT = 60 * 1000;
+	private static final int HTTP_CLIENT_DEFAULT_SOCKET_TIMEOUT = 60 * 1000;
 	public static final String PREFERENCE_DEFAULT_FILE_NAME = "growthanalytics-preferences";
 
 	private static final String DEFAULT_NAMESPACE = "Default";
@@ -34,7 +36,8 @@ public class GrowthAnalytics {
 
 	private static final GrowthAnalytics instance = new GrowthAnalytics();
 	private final Logger logger = new Logger(LOGGER_DEFAULT_TAG);
-	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL);
+	private final GrowthbeatHttpClient httpClient = new GrowthbeatHttpClient(HTTP_CLIENT_DEFAULT_BASE_URL,
+			HTTP_CLIENT_DEFAULT_CONNECTION_TIMEOUT, HTTP_CLIENT_DEFAULT_SOCKET_TIMEOUT);
 	private final Preference preference = new Preference(PREFERENCE_DEFAULT_FILE_NAME);
 
 	private String applicationId = null;
@@ -68,6 +71,12 @@ public class GrowthAnalytics {
 
 		GrowthbeatCore.getInstance().initialize(context, applicationId, credentialId);
 		this.preference.setContext(GrowthbeatCore.getInstance().getContext());
+
+		if (GrowthbeatCore.getInstance().getClient() == null
+				|| (GrowthbeatCore.getInstance().getClient().getApplication() != null && !GrowthbeatCore.getInstance().getClient()
+						.getApplication().getId().equals(applicationId))) {
+			preference.removeAll();
+		}
 
 		setBasicTags();
 
@@ -285,6 +294,21 @@ public class GrowthAnalytics {
 						return;
 					tag(DEFAULT_NAMESPACE, "AdvertisingID", adInfo.getId());
 				} catch (Exception e) {
+					logger.warning("Failed to get advertising info: " + e.getMessage());
+				}
+			}
+		}).start();
+	}
+
+	public void setTrackingEnabled() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(GrowthbeatCore.getInstance().getContext());
+					tag(DEFAULT_NAMESPACE, "TrackingEnabled", String.valueOf(adInfo.isLimitAdTrackingEnabled()));
+				} catch (Exception e) {
+					logger.warning("Failed to get advertising info: " + e.getMessage());
 				}
 			}
 		}).start();
@@ -298,6 +322,7 @@ public class GrowthAnalytics {
 		setTimeZoneOffset();
 		setAppVersion();
 		setAdvertisingId();
+		setTrackingEnabled();
 	}
 
 	public String getApplicationId() {
